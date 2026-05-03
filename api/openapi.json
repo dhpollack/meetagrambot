@@ -1,1 +1,775 @@
-{"openapi":"3.1.0","info":{"title":"meetagain public API","version":"1.0.0","description":"Public REST API. The same spec applies to every host; hostnames are relative."},"servers":[{"url":"\/"}],"tags":[{"name":"public","description":"Public Endpoints"},{"name":"data","description":"Public Data"},{"name":"auth","description":"Authentication"},{"name":"cms","description":"CMS Pages","x-badge":"Token required"},{"name":"cms-blocks","description":"CMS Blocks","x-badge":"Token required"},{"name":"logs","description":"System Logs","x-badge":"Token required"}],"paths":{"\/api\/status":{"get":{"tags":["public"],"summary":"Service health check","x-example":"curl HOST\/api\/status","responses":{"200":{"description":"OK","content":{"application\/json":{"schema":{"type":"string"}}}}}}},"\/api\/translations":{"get":{"tags":["public"],"summary":"Translation strings","x-example":"curl HOST\/api\/translations","responses":{"200":{"description":"OK"}}}},"\/api\/glossary":{"get":{"tags":["public"],"summary":"Glossary data","x-example":"curl HOST\/api\/glossary","responses":{"200":{"description":"OK"}}}},"\/api\/auth\/token":{"post":{"tags":["auth"],"summary":"Generate Bearer token (email + password)","x-example":"TOKEN=$(curl -s -X POST HOST\/api\/auth\/token \\\n  -H \u0027Content-Type: application\/json\u0027 \\\n  -d \u0027{\u0022email\u0022:\u0022admin@example.com\u0022,\u0022password\u0022:\u0022...\u0022}\u0027 | jq -r .token)","requestBody":{"required":true,"content":{"application\/json":{"schema":{"type":"object","required":["email","password"],"properties":{"email":{"type":"string","format":"email"},"password":{"type":"string"}}}}}},"responses":{"200":{"description":"Token issued","content":{"application\/json":{"schema":{"type":"object","properties":{"token":{"type":"string"}}}}}},"401":{"description":"Invalid credentials"},"429":{"description":"Too many attempts"}}},"delete":{"tags":["auth"],"summary":"Revoke current token (requires Bearer)","x-example":"curl -s -X DELETE HOST\/api\/auth\/token \\\n  -H \u0022Authorization: Bearer $TOKEN\u0022","security":[{"bearerAuth":[]}],"responses":{"204":{"description":"Revoked"}}}},"\/api\/events":{"get":{"tags":["data"],"summary":"List upcoming public events (paginated)","x-example":"curl \u0027HOST\/api\/events?limit=10\u0026from=2026-05-01\u0027","parameters":[{"name":"locale","in":"query","schema":{"type":"string"}},{"name":"limit","in":"query","schema":{"type":"integer","minimum":1,"maximum":100,"default":20}},{"name":"offset","in":"query","schema":{"type":"integer","minimum":0,"default":0}},{"name":"from","in":"query","schema":{"type":"string","format":"date-time"}},{"name":"to","in":"query","schema":{"type":"string","format":"date-time"}}],"responses":{"200":{"description":"OK","content":{"application\/json":{"schema":{"type":"object","properties":{"items":{"type":"array","items":{"$ref":"#\/components\/schemas\/EventSummary"}},"total":{"type":"integer"},"limit":{"type":"integer"},"offset":{"type":"integer"}}}}}}}}},"\/api\/events\/{id}":{"get":{"tags":["data"],"summary":"Single event detail","x-example":"curl HOST\/api\/events\/42","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer"}},{"name":"locale","in":"query","schema":{"type":"string"}}],"responses":{"200":{"description":"OK","content":{"application\/json":{"schema":{"$ref":"#\/components\/schemas\/EventDetail"}}}},"404":{"description":"Not found"}}}},"\/api\/cms\/":{"get":{"tags":["cms"],"summary":"List all CMS pages","x-example":"curl HOST\/api\/cms\/ \\\n  -H \u0022Authorization: Bearer $TOKEN\u0022","security":[{"bearerAuth":[]}],"responses":{"200":{"description":"OK"}}},"post":{"tags":["cms"],"summary":"Create page","x-example":"curl -X POST HOST\/api\/cms\/ \\\n  -H \u0022Authorization: Bearer $TOKEN\u0022 \\\n  -H \u0027Content-Type: application\/json\u0027 \\\n  -d \u0027{\u0022slug\u0022:\u0022my-page\u0022,\u0022titles\u0022:{\u0022en\u0022:\u0022My Page\u0022},\u0022linkNames\u0022:{\u0022en\u0022:\u0022My Page\u0022}}\u0027","security":[{"bearerAuth":[]}],"responses":{"201":{"description":"Created"}}}},"\/api\/cms\/{id}":{"get":{"tags":["cms"],"summary":"Get full page with blocks","x-example":"curl HOST\/api\/cms\/1 \\\n  -H \u0022Authorization: Bearer $TOKEN\u0022","security":[{"bearerAuth":[]}],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer"}}],"responses":{"200":{"description":"OK"}}},"put":{"tags":["cms"],"summary":"Update metadata (slug, published, titles, linkNames)","x-example":"curl -X PUT HOST\/api\/cms\/1 \\\n  -H \u0022Authorization: Bearer $TOKEN\u0022 \\\n  -H \u0027Content-Type: application\/json\u0027 \\\n  -d \u0027{\u0022published\u0022:true,\u0022titles\u0022:{\u0022en\u0022:\u0022Updated\u0022}}\u0027","security":[{"bearerAuth":[]}],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer"}}],"responses":{"200":{"description":"OK"}}},"delete":{"tags":["cms"],"summary":"Delete page (not allowed if locked)","x-example":"curl -X DELETE HOST\/api\/cms\/1 \\\n  -H \u0022Authorization: Bearer $TOKEN\u0022","security":[{"bearerAuth":[]}],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer"}}],"responses":{"204":{"description":"Deleted"}}}},"\/api\/cms\/{id}\/blocks":{"post":{"tags":["cms-blocks"],"summary":"Add block","x-example":"curl -X POST HOST\/api\/cms\/1\/blocks \\\n  -H \u0022Authorization: Bearer $TOKEN\u0022 \\\n  -H \u0027Content-Type: application\/json\u0027 \\\n  -d \u0027{\u0022language\u0022:\u0022en\u0022,\u0022type\u0022:1,\u0022priority\u0022:1,\u0022json\u0022:{\u0022text\u0022:\u0022Hello\u0022}}\u0027","security":[{"bearerAuth":[]}],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer"}}],"responses":{"201":{"description":"Created"}}}},"\/api\/cms\/{id}\/blocks\/{blockId}":{"put":{"tags":["cms-blocks"],"summary":"Update block json and\/or priority","x-example":"curl -X PUT HOST\/api\/cms\/1\/blocks\/5 \\\n  -H \u0022Authorization: Bearer $TOKEN\u0022 \\\n  -H \u0027Content-Type: application\/json\u0027 \\\n  -d \u0027{\u0022priority\u0022:2,\u0022json\u0022:{\u0022text\u0022:\u0022Updated\u0022}}\u0027","security":[{"bearerAuth":[]}],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer"}},{"name":"blockId","in":"path","required":true,"schema":{"type":"integer"}}],"responses":{"200":{"description":"OK"}}},"delete":{"tags":["cms-blocks"],"summary":"Delete block","x-example":"curl -X DELETE HOST\/api\/cms\/1\/blocks\/5 \\\n  -H \u0022Authorization: Bearer $TOKEN\u0022","security":[{"bearerAuth":[]}],"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer"}},{"name":"blockId","in":"path","required":true,"schema":{"type":"integer"}}],"responses":{"204":{"description":"Deleted"}}}},"\/api\/logs":{"get":{"tags":["logs"],"summary":"Summary of all log streams (counts + latest timestamps)","x-example":"curl \u0027HOST\/api\/logs\u0027 \\\n  -H \u0022Authorization: Bearer $TOKEN\u0022","security":[{"bearerAuth":[]}],"responses":{"200":{"description":"OK"}}}},"\/api\/logs\/system":{"get":{"tags":["logs"],"summary":"Recent file-based system log entries (Monolog rotating file)","x-example":"curl \u0027HOST\/api\/logs\/system?limit=50\u0026level=WARNING\u0027 \\\n  -H \u0022Authorization: Bearer $TOKEN\u0022","security":[{"bearerAuth":[]}],"responses":{"200":{"description":"OK"},"400":{"description":"Bad request - limit out of range or non-numeric"}}}},"\/api\/logs\/activity":{"get":{"tags":["logs"],"summary":"Recent user activity stream entries","x-example":"curl \u0027HOST\/api\/logs\/activity?limit=50\u0027 \\\n  -H \u0022Authorization: Bearer $TOKEN\u0022","security":[{"bearerAuth":[]}],"responses":{"200":{"description":"OK"},"400":{"description":"Bad request - limit out of range or non-numeric"}}}},"\/api\/logs\/not-found":{"get":{"tags":["logs"],"summary":"Recent 404 not-found URL log entries","x-example":"curl \u0027HOST\/api\/logs\/not-found?limit=50\u0027 \\\n  -H \u0022Authorization: Bearer $TOKEN\u0022","security":[{"bearerAuth":[]}],"responses":{"200":{"description":"OK"},"400":{"description":"Bad request - limit out of range or non-numeric"}}}},"\/api\/logs\/cron":{"get":{"tags":["logs"],"summary":"Recent cron run log entries","x-example":"curl \u0027HOST\/api\/logs\/cron?limit=50\u0027 \\\n  -H \u0022Authorization: Bearer $TOKEN\u0022","security":[{"bearerAuth":[]}],"responses":{"200":{"description":"OK"},"400":{"description":"Bad request - limit out of range or non-numeric"}}}},"\/api\/groups":{"get":{"tags":["data"],"summary":"List public groups (multisite plugin only)","x-example":"curl HOST\/api\/groups","responses":{"200":{"description":"OK","content":{"application\/json":{"schema":{"type":"object","properties":{"items":{"type":"array","items":{"$ref":"#\/components\/schemas\/Group"}},"total":{"type":"integer"}}}}}},"404":{"description":"Plugin not active"}}}},"\/api\/groups\/{slug}":{"get":{"tags":["data"],"summary":"Single group detail","x-example":"curl HOST\/api\/groups\/my-group","parameters":[{"name":"slug","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"OK","content":{"application\/json":{"schema":{"$ref":"#\/components\/schemas\/Group"}}}},"404":{"description":"Not found"}}}}},"components":{"securitySchemes":{"bearerAuth":{"type":"http","scheme":"bearer"}},"schemas":{"EventSummary":{"type":"object","properties":{"id":{"type":"integer"},"title":{"type":"string"},"start":{"type":"string","format":"date-time"},"end":{"type":["string","null"],"format":"date-time"},"location":{"type":"string"},"url":{"type":"string","format":"uri"},"previewImageUrl":{"type":["string","null"],"format":"uri"}}},"EventDetail":{"allOf":[{"$ref":"#\/components\/schemas\/EventSummary"},{"type":"object","properties":{"description":{"type":"string"}}}]},"Group":{"type":"object","properties":{"id":{"type":"integer"},"name":{"type":"string"},"slug":{"type":"string"},"description":{"type":["string","null"]},"domain":{"type":["string","null"]},"url":{"type":"string","format":"uri"}}}}}}
+{
+  "components": {
+    "schemas": {
+      "EventDetail": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EventSummary"
+          },
+          {
+            "properties": {
+              "description": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        ]
+      },
+      "EventSummary": {
+        "properties": {
+          "end": {
+            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "integer"
+          },
+          "location": {
+            "type": "string"
+          },
+          "previewImageUrl": {
+            "format": "uri",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "start": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "format": "uri",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "Group": {
+        "properties": {
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "domain": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "url": {
+            "format": "uri",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Public REST API. The same spec applies to every host; hostnames are relative.",
+    "title": "meetagain public API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/auth/token": {
+      "delete": {
+        "responses": {
+          "204": {
+            "description": "Revoked"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Revoke current token (requires Bearer)",
+        "tags": [
+          "auth"
+        ],
+        "x-example": "curl -s -X DELETE HOST/api/auth/token \\\n  -H \"Authorization: Bearer $TOKEN\""
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "email": {
+                    "format": "email",
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Token issued"
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "429": {
+            "description": "Too many attempts"
+          }
+        },
+        "summary": "Generate Bearer token (email + password)",
+        "tags": [
+          "auth"
+        ],
+        "x-example": "TOKEN=$(curl -s -X POST HOST/api/auth/token \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"email\":\"admin@example.com\",\"password\":\"...\"}' | jq -r .token)"
+      }
+    },
+    "/api/cms/": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "List all CMS pages",
+        "tags": [
+          "cms"
+        ],
+        "x-example": "curl HOST/api/cms/ \\\n  -H \"Authorization: Bearer $TOKEN\""
+      },
+      "post": {
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Create page",
+        "tags": [
+          "cms"
+        ],
+        "x-example": "curl -X POST HOST/api/cms/ \\\n  -H \"Authorization: Bearer $TOKEN\" \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"slug\":\"my-page\",\"titles\":{\"en\":\"My Page\"},\"linkNames\":{\"en\":\"My Page\"}}'"
+      }
+    },
+    "/api/cms/{id}": {
+      "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Delete page (not allowed if locked)",
+        "tags": [
+          "cms"
+        ],
+        "x-example": "curl -X DELETE HOST/api/cms/1 \\\n  -H \"Authorization: Bearer $TOKEN\""
+      },
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Get full page with blocks",
+        "tags": [
+          "cms"
+        ],
+        "x-example": "curl HOST/api/cms/1 \\\n  -H \"Authorization: Bearer $TOKEN\""
+      },
+      "put": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Update metadata (slug, published, titles, linkNames)",
+        "tags": [
+          "cms"
+        ],
+        "x-example": "curl -X PUT HOST/api/cms/1 \\\n  -H \"Authorization: Bearer $TOKEN\" \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"published\":true,\"titles\":{\"en\":\"Updated\"}}'"
+      }
+    },
+    "/api/cms/{id}/blocks": {
+      "post": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Add block",
+        "tags": [
+          "cms-blocks"
+        ],
+        "x-example": "curl -X POST HOST/api/cms/1/blocks \\\n  -H \"Authorization: Bearer $TOKEN\" \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"language\":\"en\",\"type\":1,\"priority\":1,\"json\":{\"text\":\"Hello\"}}'"
+      }
+    },
+    "/api/cms/{id}/blocks/{blockId}": {
+      "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "blockId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Delete block",
+        "tags": [
+          "cms-blocks"
+        ],
+        "x-example": "curl -X DELETE HOST/api/cms/1/blocks/5 \\\n  -H \"Authorization: Bearer $TOKEN\""
+      },
+      "put": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "blockId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Update block json and/or priority",
+        "tags": [
+          "cms-blocks"
+        ],
+        "x-example": "curl -X PUT HOST/api/cms/1/blocks/5 \\\n  -H \"Authorization: Bearer $TOKEN\" \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"priority\":2,\"json\":{\"text\":\"Updated\"}}'"
+      }
+    },
+    "/api/events": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/components/schemas/EventSummary"
+                      },
+                      "type": "array"
+                    },
+                    "limit": {
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "List upcoming public events (paginated)",
+        "tags": [
+          "data"
+        ],
+        "x-example": "curl 'HOST/api/events?limit=10&from=2026-05-01'"
+      }
+    },
+    "/api/events/{id}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventDetail"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "summary": "Single event detail",
+        "tags": [
+          "data"
+        ],
+        "x-example": "curl HOST/api/events/42"
+      }
+    },
+    "/api/glossary": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "summary": "Glossary data",
+        "tags": [
+          "public"
+        ],
+        "x-example": "curl HOST/api/glossary"
+      }
+    },
+    "/api/groups": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/components/schemas/Group"
+                      },
+                      "type": "array"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "404": {
+            "description": "Plugin not active"
+          }
+        },
+        "summary": "List public groups (multisite plugin only)",
+        "tags": [
+          "data"
+        ],
+        "x-example": "curl HOST/api/groups"
+      }
+    },
+    "/api/groups/{slug}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Group"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "summary": "Single group detail",
+        "tags": [
+          "data"
+        ],
+        "x-example": "curl HOST/api/groups/my-group"
+      }
+    },
+    "/api/logs": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Summary of all log streams (counts + latest timestamps)",
+        "tags": [
+          "logs"
+        ],
+        "x-example": "curl 'HOST/api/logs' \\\n  -H \"Authorization: Bearer $TOKEN\""
+      }
+    },
+    "/api/logs/activity": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad request - limit out of range or non-numeric"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Recent user activity stream entries",
+        "tags": [
+          "logs"
+        ],
+        "x-example": "curl 'HOST/api/logs/activity?limit=50' \\\n  -H \"Authorization: Bearer $TOKEN\""
+      }
+    },
+    "/api/logs/cron": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad request - limit out of range or non-numeric"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Recent cron run log entries",
+        "tags": [
+          "logs"
+        ],
+        "x-example": "curl 'HOST/api/logs/cron?limit=50' \\\n  -H \"Authorization: Bearer $TOKEN\""
+      }
+    },
+    "/api/logs/not-found": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad request - limit out of range or non-numeric"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Recent 404 not-found URL log entries",
+        "tags": [
+          "logs"
+        ],
+        "x-example": "curl 'HOST/api/logs/not-found?limit=50' \\\n  -H \"Authorization: Bearer $TOKEN\""
+      }
+    },
+    "/api/logs/system": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad request - limit out of range or non-numeric"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Recent file-based system log entries (Monolog rotating file)",
+        "tags": [
+          "logs"
+        ],
+        "x-example": "curl 'HOST/api/logs/system?limit=50&level=WARNING' \\\n  -H \"Authorization: Bearer $TOKEN\""
+      }
+    },
+    "/api/status": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Service health check",
+        "tags": [
+          "public"
+        ],
+        "x-example": "curl HOST/api/status"
+      }
+    },
+    "/api/translations": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "summary": "Translation strings",
+        "tags": [
+          "public"
+        ],
+        "x-example": "curl HOST/api/translations"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "tags": [
+    {
+      "description": "Public Endpoints",
+      "name": "public"
+    },
+    {
+      "description": "Public Data",
+      "name": "data"
+    },
+    {
+      "description": "Authentication",
+      "name": "auth"
+    },
+    {
+      "description": "CMS Pages",
+      "name": "cms",
+      "x-badge": "Token required"
+    },
+    {
+      "description": "CMS Blocks",
+      "name": "cms-blocks",
+      "x-badge": "Token required"
+    },
+    {
+      "description": "System Logs",
+      "name": "logs",
+      "x-badge": "Token required"
+    }
+  ]
+}

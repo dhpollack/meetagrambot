@@ -1,6 +1,6 @@
 {
   "name": "meetagrambot",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "deploy": "wrangler deploy",
@@ -12,8 +12,8 @@
     "generate": "openapi-ts",
     "typecheck": "tsc --noEmit",
     "format": "biome format --write src/**",
-    "check": "biome check src/index.ts",
-    "lint": "biome lint src/index.ts"
+    "check": "biome check src/*.ts",
+    "lint": "biome lint src/*.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.14",
