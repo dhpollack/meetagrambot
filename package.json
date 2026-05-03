@@ -9,7 +9,8 @@
     "test": "vitest",
     "cf-typegen": "wrangler types",
     "generate": "openapi-ts",
-    "format": "biome format --write src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "format": "biome format --write src/**",
     "check": "biome check src/index.ts",
     "lint": "biome lint src/index.ts"
   },

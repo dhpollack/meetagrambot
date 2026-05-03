@@ -15,7 +15,11 @@ export interface Env {
 }
 
 export default {
-	async fetch(request: Request, env: Env): Promise<Response> {
+	async fetch(
+		request: Request,
+		env: Env,
+		execCtx: ExecutionContext,
+	): Promise<Response> {
 		client.setConfig({
 			baseUrl: env.API_BASE_URL,
 		});
@@ -55,9 +59,12 @@ export default {
 			const limit = args[0] ? parseInt(args[0], 10) : 10;
 			const from = args[1] ?? undefined;
 
-			const { data, error } = await getApiEvents({
-				query: { limit, from },
-			});
+			const { data, error } = await withCache(
+				`events:list:${limit}:${from ?? ""}`,
+				() => getApiEvents({ query: { limit, from } }),
+				600,
+				execCtx,
+			);
 			if (error) {
 				return ctx.reply(`Error fetching events: ${errMsg(error)}`);
 			}
@@ -76,7 +83,12 @@ export default {
 		bot.callbackQuery(/^event:(.+)$/, async (ctx) => {
 			const id = parseInt(ctx.match[1], 10);
 			await ctx.answerCallbackQuery();
-			const { data, error } = await getApiEventsById({ path: { id } });
+			const { data, error } = await withCache(
+				`events:${id}`,
+				() => getApiEventsById({ path: { id } }),
+				3600,
+				execCtx,
+			);
 			if (error) {
 				return ctx.reply(`Error fetching event: ${errMsg(error)}`);
 			}
@@ -104,7 +116,12 @@ export default {
 				return ctx.reply("Event ID must be a number.");
 			}
 
-			const { data, error } = await getApiEventsById({ path: { id } });
+			const { data, error } = await withCache(
+				`events:${id}`,
+				() => getApiEventsById({ path: { id } }),
+				3600,
+				execCtx,
+			);
 			if (error) {
 				return ctx.reply(`Error fetching event: ${errMsg(error)}`);
 			}
@@ -123,7 +140,12 @@ export default {
 		});
 
 		bot.command("groups", async (ctx) => {
-			const { data, error } = await getApiGroups();
+			const { data, error } = await withCache(
+				"groups:list",
+				() => getApiGroups(),
+				3600,
+				execCtx,
+			);
 			if (error) {
 				return ctx.reply(`Error fetching groups: ${errMsg(error)}`);
 			}
@@ -140,7 +162,12 @@ export default {
 		bot.callbackQuery(/^group:(.+)$/, async (ctx) => {
 			const slug = ctx.match[1];
 			await ctx.answerCallbackQuery();
-			const { data, error } = await getApiGroupsBySlug({ path: { slug } });
+			const { data, error } = await withCache(
+				`groups:${slug}`,
+				() => getApiGroupsBySlug({ path: { slug } }),
+				3600,
+				execCtx,
+			);
 			if (error) {
 				return ctx.reply(`Error fetching group: ${errMsg(error)}`);
 			}
@@ -160,7 +187,12 @@ export default {
 			if (!slug) {
 				return ctx.reply("Usage: /group <slug>");
 			}
-			const { data, error } = await getApiGroupsBySlug({ path: { slug } });
+			const { data, error } = await withCache(
+				`groups:${slug}`,
+				() => getApiGroupsBySlug({ path: { slug } }),
+				3600,
+				execCtx,
+			);
 			if (error) {
 				return ctx.reply(`Error fetching group: ${errMsg(error)}`);
 			}
@@ -191,6 +223,38 @@ export default {
 		}
 	},
 };
+
+async function withCache<T>(
+	key: string,
+	fetcher: () => Promise<{ data?: T; error?: unknown }>,
+	ttl: number,
+	ctx: ExecutionContext,
+): Promise<{ data?: T; error?: unknown }> {
+	const cacheUrl = `https://cache.internal/${key}`;
+	try {
+		const cached = await caches.default.match(cacheUrl);
+		if (cached) {
+			return { data: (await cached.json()) as T };
+		}
+	} catch {
+		// Cache read failed, fall through to live API
+	}
+
+	const result = await fetcher();
+
+	if (result.data && !result.error) {
+		ctx.waitUntil(
+			caches.default.put(
+				cacheUrl,
+				new Response(JSON.stringify(result.data), {
+					headers: { "Cache-Control": `public, max-age=${ttl}` },
+				}),
+			),
+		);
+	}
+
+	return result;
+}
 
 function errMsg(error: unknown): string {
 	if (error instanceof Error) return error.message;

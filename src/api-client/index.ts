@@ -24,7 +24,7 @@ export {
 	postApiCmsByIdBlocks,
 	putApiCmsById,
 	putApiCmsByIdBlocksByBlockId,
-} from './sdk.gen';
+} from "./sdk.gen";
 export type {
 	ClientOptions,
 	DeleteApiAuthTokenData,
@@ -91,4 +91,4 @@ export type {
 	PutApiCmsByIdBlocksByBlockIdResponses,
 	PutApiCmsByIdData,
 	PutApiCmsByIdResponses,
-} from './types.gen';
+} from "./types.gen";

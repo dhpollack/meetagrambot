@@ -4,7 +4,7 @@ export default defineConfig({
   input: './api/openapi.json',
   output: {
     path: './src/api-client',
-    format: false,
+    postProcess: ['biome:format'],
   },
   plugins: [
     '@hey-api/client-fetch',

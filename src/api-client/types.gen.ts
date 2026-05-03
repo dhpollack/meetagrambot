@@ -31,7 +31,7 @@ export type GetApiStatusData = {
 	body?: never;
 	path?: never;
 	query?: never;
-	url: '/api/status';
+	url: "/api/status";
 };
 
 export type GetApiStatusResponses = {
@@ -41,13 +41,14 @@ export type GetApiStatusResponses = {
 	200: string;
 };
 
-export type GetApiStatusResponse = GetApiStatusResponses[keyof GetApiStatusResponses];
+export type GetApiStatusResponse =
+	GetApiStatusResponses[keyof GetApiStatusResponses];
 
 export type GetApiTranslationsData = {
 	body?: never;
 	path?: never;
 	query?: never;
-	url: '/api/translations';
+	url: "/api/translations";
 };
 
 export type GetApiTranslationsResponses = {
@@ -61,7 +62,7 @@ export type GetApiGlossaryData = {
 	body?: never;
 	path?: never;
 	query?: never;
-	url: '/api/glossary';
+	url: "/api/glossary";
 };
 
 export type GetApiGlossaryResponses = {
@@ -75,7 +76,7 @@ export type DeleteApiAuthTokenData = {
 	body?: never;
 	path?: never;
 	query?: never;
-	url: '/api/auth/token';
+	url: "/api/auth/token";
 };
 
 export type DeleteApiAuthTokenResponses = {
@@ -85,7 +86,8 @@ export type DeleteApiAuthTokenResponses = {
 	204: void;
 };
 
-export type DeleteApiAuthTokenResponse = DeleteApiAuthTokenResponses[keyof DeleteApiAuthTokenResponses];
+export type DeleteApiAuthTokenResponse =
+	DeleteApiAuthTokenResponses[keyof DeleteApiAuthTokenResponses];
 
 export type PostApiAuthTokenData = {
 	body: {
@@ -94,7 +96,7 @@ export type PostApiAuthTokenData = {
 	};
 	path?: never;
 	query?: never;
-	url: '/api/auth/token';
+	url: "/api/auth/token";
 };
 
 export type PostApiAuthTokenErrors = {
@@ -117,7 +119,8 @@ export type PostApiAuthTokenResponses = {
 	};
 };
 
-export type PostApiAuthTokenResponse = PostApiAuthTokenResponses[keyof PostApiAuthTokenResponses];
+export type PostApiAuthTokenResponse =
+	PostApiAuthTokenResponses[keyof PostApiAuthTokenResponses];
 
 export type GetApiEventsData = {
 	body?: never;
@@ -129,7 +132,7 @@ export type GetApiEventsData = {
 		from?: string;
 		to?: string;
 	};
-	url: '/api/events';
+	url: "/api/events";
 };
 
 export type GetApiEventsResponses = {
@@ -144,7 +147,8 @@ export type GetApiEventsResponses = {
 	};
 };
 
-export type GetApiEventsResponse = GetApiEventsResponses[keyof GetApiEventsResponses];
+export type GetApiEventsResponse =
+	GetApiEventsResponses[keyof GetApiEventsResponses];
 
 export type GetApiEventsByIdData = {
 	body?: never;
@@ -154,7 +158,7 @@ export type GetApiEventsByIdData = {
 	query?: {
 		locale?: string;
 	};
-	url: '/api/events/{id}';
+	url: "/api/events/{id}";
 };
 
 export type GetApiEventsByIdErrors = {
@@ -171,13 +175,14 @@ export type GetApiEventsByIdResponses = {
 	200: EventDetail;
 };
 
-export type GetApiEventsByIdResponse = GetApiEventsByIdResponses[keyof GetApiEventsByIdResponses];
+export type GetApiEventsByIdResponse =
+	GetApiEventsByIdResponses[keyof GetApiEventsByIdResponses];
 
 export type GetApiCmsData = {
 	body?: never;
 	path?: never;
 	query?: never;
-	url: '/api/cms/';
+	url: "/api/cms/";
 };
 
 export type GetApiCmsResponses = {
@@ -191,7 +196,7 @@ export type PostApiCmsData = {
 	body?: never;
 	path?: never;
 	query?: never;
-	url: '/api/cms/';
+	url: "/api/cms/";
 };
 
 export type PostApiCmsResponses = {
@@ -207,7 +212,7 @@ export type DeleteApiCmsByIdData = {
 		id: number;
 	};
 	query?: never;
-	url: '/api/cms/{id}';
+	url: "/api/cms/{id}";
 };
 
 export type DeleteApiCmsByIdResponses = {
@@ -217,7 +222,8 @@ export type DeleteApiCmsByIdResponses = {
 	204: void;
 };
 
-export type DeleteApiCmsByIdResponse = DeleteApiCmsByIdResponses[keyof DeleteApiCmsByIdResponses];
+export type DeleteApiCmsByIdResponse =
+	DeleteApiCmsByIdResponses[keyof DeleteApiCmsByIdResponses];
 
 export type GetApiCmsByIdData = {
 	body?: never;
@@ -225,7 +231,7 @@ export type GetApiCmsByIdData = {
 		id: number;
 	};
 	query?: never;
-	url: '/api/cms/{id}';
+	url: "/api/cms/{id}";
 };
 
 export type GetApiCmsByIdResponses = {
@@ -241,7 +247,7 @@ export type PutApiCmsByIdData = {
 		id: number;
 	};
 	query?: never;
-	url: '/api/cms/{id}';
+	url: "/api/cms/{id}";
 };
 
 export type PutApiCmsByIdResponses = {
@@ -257,7 +263,7 @@ export type PostApiCmsByIdBlocksData = {
 		id: number;
 	};
 	query?: never;
-	url: '/api/cms/{id}/blocks';
+	url: "/api/cms/{id}/blocks";
 };
 
 export type PostApiCmsByIdBlocksResponses = {
@@ -274,7 +280,7 @@ export type DeleteApiCmsByIdBlocksByBlockIdData = {
 		blockId: number;
 	};
 	query?: never;
-	url: '/api/cms/{id}/blocks/{blockId}';
+	url: "/api/cms/{id}/blocks/{blockId}";
 };
 
 export type DeleteApiCmsByIdBlocksByBlockIdResponses = {
@@ -294,7 +300,7 @@ export type PutApiCmsByIdBlocksByBlockIdData = {
 		blockId: number;
 	};
 	query?: never;
-	url: '/api/cms/{id}/blocks/{blockId}';
+	url: "/api/cms/{id}/blocks/{blockId}";
 };
 
 export type PutApiCmsByIdBlocksByBlockIdResponses = {
@@ -308,7 +314,7 @@ export type GetApiLogsData = {
 	body?: never;
 	path?: never;
 	query?: never;
-	url: '/api/logs';
+	url: "/api/logs";
 };
 
 export type GetApiLogsResponses = {
@@ -322,7 +328,7 @@ export type GetApiLogsSystemData = {
 	body?: never;
 	path?: never;
 	query?: never;
-	url: '/api/logs/system';
+	url: "/api/logs/system";
 };
 
 export type GetApiLogsSystemErrors = {
@@ -343,7 +349,7 @@ export type GetApiLogsActivityData = {
 	body?: never;
 	path?: never;
 	query?: never;
-	url: '/api/logs/activity';
+	url: "/api/logs/activity";
 };
 
 export type GetApiLogsActivityErrors = {
@@ -364,7 +370,7 @@ export type GetApiLogsNotFoundData = {
 	body?: never;
 	path?: never;
 	query?: never;
-	url: '/api/logs/not-found';
+	url: "/api/logs/not-found";
 };
 
 export type GetApiLogsNotFoundErrors = {
@@ -385,7 +391,7 @@ export type GetApiLogsCronData = {
 	body?: never;
 	path?: never;
 	query?: never;
-	url: '/api/logs/cron';
+	url: "/api/logs/cron";
 };
 
 export type GetApiLogsCronErrors = {
@@ -406,7 +412,7 @@ export type GetApiGroupsData = {
 	body?: never;
 	path?: never;
 	query?: never;
-	url: '/api/groups';
+	url: "/api/groups";
 };
 
 export type GetApiGroupsErrors = {
@@ -426,7 +432,8 @@ export type GetApiGroupsResponses = {
 	};
 };
 
-export type GetApiGroupsResponse = GetApiGroupsResponses[keyof GetApiGroupsResponses];
+export type GetApiGroupsResponse =
+	GetApiGroupsResponses[keyof GetApiGroupsResponses];
 
 export type GetApiGroupsBySlugData = {
 	body?: never;
@@ -434,7 +441,7 @@ export type GetApiGroupsBySlugData = {
 		slug: string;
 	};
 	query?: never;
-	url: '/api/groups/{slug}';
+	url: "/api/groups/{slug}";
 };
 
 export type GetApiGroupsBySlugErrors = {
@@ -451,4 +458,5 @@ export type GetApiGroupsBySlugResponses = {
 	200: Group;
 };
 
-export type GetApiGroupsBySlugResponse = GetApiGroupsBySlugResponses[keyof GetApiGroupsBySlugResponses];
+export type GetApiGroupsBySlugResponse =
+	GetApiGroupsBySlugResponses[keyof GetApiGroupsBySlugResponses];
