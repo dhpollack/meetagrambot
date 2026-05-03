@@ -20,6 +20,9 @@
 	"compatibility_flags": [
 		"nodejs_compat"
 	],
+	"ai": {
+		"binding": "AI"
+	},
 	"vars": {
 		"BOT_INFO": "{\"id\":8733038024,\"is_bot\":true,\"first_name\":\"meetagrambot\",\"username\":\"MeetAgramBot\",\"can_join_groups\":true,\"can_read_all_group_messages\":false,\"supports_inline_queries\":false,\"can_connect_to_business\":false}",
 		"API_BASE_URL": "https://meetagain.org"
