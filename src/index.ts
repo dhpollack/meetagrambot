@@ -385,6 +385,12 @@ export default {
         return ctx.reply("I don't understand that. Try /help.");
       }
 
+      if (text.length > 500) {
+        return ctx.reply(
+          "Your message is too long. Please send a shorter request (max 500 characters).",
+        );
+      }
+
       await ctx.replyWithChatAction("typing");
 
       const parsed = await interpretMessage(env.AI, text, execTool);
