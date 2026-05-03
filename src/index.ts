@@ -11,6 +11,7 @@ import {
 
 export interface Env {
   BOT_TOKEN: string;
+  TELEGRAM_SECRET_TOKEN: string;
   BOT_INFO: string;
   API_BASE_URL: string;
   AI: Ai;
@@ -446,7 +447,9 @@ export default {
     });
 
     try {
-      return await webhookCallback(bot, "cloudflare-mod")(request);
+      return await webhookCallback(bot, "cloudflare-mod", {
+        secretToken: env.TELEGRAM_SECRET_TOKEN,
+      })(request);
     } catch (e) {
       console.error("Webhook error:", errMsg(e));
       return new Response("OK");

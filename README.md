@@ -23,7 +23,10 @@ A Telegram bot for [MeetAgain](https://meetagain.org) that answers questions abo
 
 ```
 BOT_TOKEN=xxxxxxxx:yyyyyyyyyyyyyyyyyyyyyyyyyyyy
+TELEGRAM_SECRET_TOKEN=<a-random-string-you-generate>
 ```
+
+Generate a random string for `TELEGRAM_SECRET_TOKEN` (e.g. `openssl rand -hex 32`). This prevents unauthorized requests from triggering your webhook.
 
 1. Clone the repo:
 
@@ -42,6 +45,12 @@ just setup
 
 ```
 just insert-bot-token
+```
+
+Set your secret token as a Cloudflare secret:
+
+```
+npx wrangler secret put TELEGRAM_SECRET_TOKEN
 ```
 
 4. Update `BOT_INFO` in `wrangler.jsonc` with your bot's info. Get it by running, this should be a json string:
@@ -64,10 +73,11 @@ Then add it to `.dev.vars`
 
 ```
 BOT_TOKEN=...
+TELEGRAM_SECRET_TOKEN=<same-value-from-step-0>
 MEETAGRAMBOT_CF_URL=https://meetagrambot.<your-cf-subdomain>.workers.dev
 ```
 
-6. Set the webhook URL:
+6. Set the webhook URL (includes the secret token):
 
 ```
 just set-bot-webhook-url

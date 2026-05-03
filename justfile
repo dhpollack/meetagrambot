@@ -19,7 +19,7 @@ get-bot-info:
   @curl "https://api.telegram.org/bot${BOT_TOKEN}/getMe" | jq -Rc .
 
 set-bot-webhook-url:
-  @curl "https://api.telegram.org/bot${BOT_TOKEN}/setWebhook?url=${MEETAGRAMBOT_CF_URL}"
+  @curl "https://api.telegram.org/bot${BOT_TOKEN}/setWebhook?url=${MEETAGRAMBOT_CF_URL}&secret_token=${TELEGRAM_SECRET_TOKEN}"
 
 _download-openapi-spec:
   curl https://meetagain.org/api/openapi.json | jq . > api/openapi.json
