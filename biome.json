@@ -1,0 +1,9 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.4.14/schema.json",
+	"formatter": {
+		"enabled": true
+	},
+	"linter": {
+		"enabled": true
+	}
+}
