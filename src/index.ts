@@ -7,7 +7,6 @@ import {
   getApiEventsById,
   getApiGroups,
   getApiGroupsBySlug,
-  getApiStatus,
 } from "./api-client/sdk.gen";
 
 export interface Env {
@@ -60,18 +59,9 @@ export default {
           "/event <id> - Event details",
           "/groups - List public groups",
           "/group <slug> - Group details",
-          "/status - API health check",
         ].join("\n"),
       ),
     );
-
-    bot.command("status", async (ctx) => {
-      const { data, error } = await getApiStatus();
-      if (error) {
-        return ctx.reply(`API error: ${errMsg(error)}`);
-      }
-      return ctx.reply(`API status: ${JSON.stringify(data)}`);
-    });
 
     bot.command("events", async (ctx) => {
       const args = ctx.message?.text?.split(" ").slice(1) ?? [];
@@ -233,12 +223,6 @@ export default {
       return ctx.reply(parts.join("\n"));
     });
 
-    async function handleStatus(ctx: Context) {
-      const { data, error } = await getApiStatus();
-      if (error) return ctx.reply(`API error: ${errMsg(error)}`);
-      return ctx.reply(`API status: ${JSON.stringify(data)}`);
-    }
-
     async function handleEvents(
       ctx: Context,
       limit: number,
@@ -393,11 +377,6 @@ export default {
             url: data.url,
           };
         }
-        case "get_status": {
-          const { data, error } = await getApiStatus();
-          if (error) return { error: errMsg(error) };
-          return data;
-        }
         default:
           return { error: `Unknown tool: ${name}` };
       }
@@ -436,11 +415,8 @@ export default {
               "/event <id> - Event details",
               "/groups - List public groups",
               "/group <slug> - Group details",
-              "/status - API health check",
             ].join("\n"),
           );
-        case "status":
-          return handleStatus(ctx);
         case "events": {
           const parts = args.split(/\s+/).filter(Boolean);
           const limit = parts[0] ? parseInt(parts[0], 10) : 10;

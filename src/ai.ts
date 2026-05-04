@@ -8,7 +8,6 @@ ALWAYS output EXACTLY ONE LINE: the command and nothing else.
 Commands:
 /start - Welcome message
 /help - List all commands
-/status - Check API health
 /events [limit] [date] - Upcoming events
 /event <id> - Event details
 /groups - List public groups
@@ -81,20 +80,11 @@ const TOOLS = [
       },
     },
   },
-  {
-    type: "function" as const,
-    function: {
-      name: "get_status",
-      description: "Check the API health status",
-      parameters: { type: "object", properties: {} },
-    },
-  },
 ];
 
 const KNOWN_COMMANDS = new Set([
   "start",
   "help",
-  "status",
   "events",
   "event",
   "groups",
