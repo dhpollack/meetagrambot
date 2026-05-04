@@ -2,6 +2,10 @@
 
 import type { Client, Options as Options2, TDataShape } from "./client";
 import { client } from "./client.gen";
+import {
+  getApiEventsByIdResponseTransformer,
+  getApiEventsResponseTransformer,
+} from "./transformers.gen";
 import type {
   DeleteApiAuthTokenData,
   DeleteApiAuthTokenResponses,
@@ -76,40 +80,6 @@ export type Options<
 };
 
 /**
- * Service health check
- */
-export const getApiStatus = <ThrowOnError extends boolean = false>(
-  options?: Options<GetApiStatusData, ThrowOnError>,
-) =>
-  (options?.client ?? client).get<GetApiStatusResponses, unknown, ThrowOnError>(
-    { url: "/api/status", ...options },
-  );
-
-/**
- * Translation strings
- */
-export const getApiTranslations = <ThrowOnError extends boolean = false>(
-  options?: Options<GetApiTranslationsData, ThrowOnError>,
-) =>
-  (options?.client ?? client).get<
-    GetApiTranslationsResponses,
-    unknown,
-    ThrowOnError
-  >({ url: "/api/translations", ...options });
-
-/**
- * Glossary data
- */
-export const getApiGlossary = <ThrowOnError extends boolean = false>(
-  options?: Options<GetApiGlossaryData, ThrowOnError>,
-) =>
-  (options?.client ?? client).get<
-    GetApiGlossaryResponses,
-    unknown,
-    ThrowOnError
-  >({ url: "/api/glossary", ...options });
-
-/**
  * Revoke current token (requires Bearer)
  */
 export const deleteApiAuthToken = <ThrowOnError extends boolean = false>(
@@ -143,28 +113,6 @@ export const postApiAuthToken = <ThrowOnError extends boolean = false>(
       ...options.headers,
     },
   });
-
-/**
- * List upcoming public events (paginated)
- */
-export const getApiEvents = <ThrowOnError extends boolean = false>(
-  options?: Options<GetApiEventsData, ThrowOnError>,
-) =>
-  (options?.client ?? client).get<GetApiEventsResponses, unknown, ThrowOnError>(
-    { url: "/api/events", ...options },
-  );
-
-/**
- * Single event detail
- */
-export const getApiEventsById = <ThrowOnError extends boolean = false>(
-  options: Options<GetApiEventsByIdData, ThrowOnError>,
-) =>
-  (options.client ?? client).get<
-    GetApiEventsByIdResponses,
-    GetApiEventsByIdErrors,
-    ThrowOnError
-  >({ url: "/api/events/{id}", ...options });
 
 /**
  * List all CMS pages
@@ -287,80 +235,46 @@ export const putApiCmsByIdBlocksByBlockId = <
   });
 
 /**
- * Summary of all log streams (counts + latest timestamps)
+ * List upcoming public events (paginated)
  */
-export const getApiLogs = <ThrowOnError extends boolean = false>(
-  options?: Options<GetApiLogsData, ThrowOnError>,
+export const getApiEvents = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiEventsData, ThrowOnError>,
 ) =>
-  (options?.client ?? client).get<GetApiLogsResponses, unknown, ThrowOnError>({
-    security: [{ scheme: "bearer", type: "http" }],
-    url: "/api/logs",
+  (options?.client ?? client).get<GetApiEventsResponses, unknown, ThrowOnError>(
+    {
+      responseTransformer: getApiEventsResponseTransformer,
+      url: "/api/events",
+      ...options,
+    },
+  );
+
+/**
+ * Single event detail
+ */
+export const getApiEventsById = <ThrowOnError extends boolean = false>(
+  options: Options<GetApiEventsByIdData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<
+    GetApiEventsByIdResponses,
+    GetApiEventsByIdErrors,
+    ThrowOnError
+  >({
+    responseTransformer: getApiEventsByIdResponseTransformer,
+    url: "/api/events/{id}",
     ...options,
   });
 
 /**
- * Recent file-based system log entries (Monolog rotating file)
+ * Glossary data
  */
-export const getApiLogsSystem = <ThrowOnError extends boolean = false>(
-  options?: Options<GetApiLogsSystemData, ThrowOnError>,
+export const getApiGlossary = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiGlossaryData, ThrowOnError>,
 ) =>
   (options?.client ?? client).get<
-    GetApiLogsSystemResponses,
-    GetApiLogsSystemErrors,
+    GetApiGlossaryResponses,
+    unknown,
     ThrowOnError
-  >({
-    security: [{ scheme: "bearer", type: "http" }],
-    url: "/api/logs/system",
-    ...options,
-  });
-
-/**
- * Recent user activity stream entries
- */
-export const getApiLogsActivity = <ThrowOnError extends boolean = false>(
-  options?: Options<GetApiLogsActivityData, ThrowOnError>,
-) =>
-  (options?.client ?? client).get<
-    GetApiLogsActivityResponses,
-    GetApiLogsActivityErrors,
-    ThrowOnError
-  >({
-    security: [{ scheme: "bearer", type: "http" }],
-    url: "/api/logs/activity",
-    ...options,
-  });
-
-/**
- * Recent 404 not-found URL log entries
- */
-export const getApiLogsNotFound = <ThrowOnError extends boolean = false>(
-  options?: Options<GetApiLogsNotFoundData, ThrowOnError>,
-) =>
-  (options?.client ?? client).get<
-    GetApiLogsNotFoundResponses,
-    GetApiLogsNotFoundErrors,
-    ThrowOnError
-  >({
-    security: [{ scheme: "bearer", type: "http" }],
-    url: "/api/logs/not-found",
-    ...options,
-  });
-
-/**
- * Recent cron run log entries
- */
-export const getApiLogsCron = <ThrowOnError extends boolean = false>(
-  options?: Options<GetApiLogsCronData, ThrowOnError>,
-) =>
-  (options?.client ?? client).get<
-    GetApiLogsCronResponses,
-    GetApiLogsCronErrors,
-    ThrowOnError
-  >({
-    security: [{ scheme: "bearer", type: "http" }],
-    url: "/api/logs/cron",
-    ...options,
-  });
+  >({ url: "/api/glossary", ...options });
 
 /**
  * List public groups (multisite plugin only)
@@ -385,3 +299,101 @@ export const getApiGroupsBySlug = <ThrowOnError extends boolean = false>(
     GetApiGroupsBySlugErrors,
     ThrowOnError
   >({ url: "/api/groups/{slug}", ...options });
+
+/**
+ * Summary of all log streams (counts + latest timestamps)
+ */
+export const getApiLogs = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiLogsData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<GetApiLogsResponses, unknown, ThrowOnError>({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/logs",
+    ...options,
+  });
+
+/**
+ * Recent user activity stream entries
+ */
+export const getApiLogsActivity = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiLogsActivityData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<
+    GetApiLogsActivityResponses,
+    GetApiLogsActivityErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/logs/activity",
+    ...options,
+  });
+
+/**
+ * Recent cron run log entries
+ */
+export const getApiLogsCron = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiLogsCronData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<
+    GetApiLogsCronResponses,
+    GetApiLogsCronErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/logs/cron",
+    ...options,
+  });
+
+/**
+ * Recent 404 not-found URL log entries
+ */
+export const getApiLogsNotFound = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiLogsNotFoundData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<
+    GetApiLogsNotFoundResponses,
+    GetApiLogsNotFoundErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/logs/not-found",
+    ...options,
+  });
+
+/**
+ * Recent file-based system log entries (Monolog rotating file)
+ */
+export const getApiLogsSystem = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiLogsSystemData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<
+    GetApiLogsSystemResponses,
+    GetApiLogsSystemErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/logs/system",
+    ...options,
+  });
+
+/**
+ * Service health check
+ */
+export const getApiStatus = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiStatusData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<GetApiStatusResponses, unknown, ThrowOnError>(
+    { url: "/api/status", ...options },
+  );
+
+/**
+ * Translation strings
+ */
+export const getApiTranslations = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiTranslationsData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<
+    GetApiTranslationsResponses,
+    unknown,
+    ThrowOnError
+  >({ url: "/api/translations", ...options });

@@ -70,7 +70,7 @@ export default {
 
       const { data, error } = await withCache(
         `events:list:${limit}:${sanitizeCacheKey(from ?? "")}`,
-        () => getApiEvents({ query: { limit, from } }),
+        () => getApiEvents({ query: { limit, from: from ? new Date(from) : undefined } }),
         600,
         execCtx,
       );
@@ -83,7 +83,7 @@ export default {
       const keyboard = new InlineKeyboard();
       for (const e of data.items) {
         keyboard
-          .text(`${e.title} (${e.start?.slice(0, 10)})`, `event:${e.id}`)
+          .text(`${e.title} (${e.start?.toLocaleDateString("sv-SE")})`, `event:${e.id}`)
           .row();
       }
       return ctx.reply("Upcoming events:", { reply_markup: keyboard });
@@ -106,8 +106,8 @@ export default {
       }
       const parts = [
         data.title,
-        `Start: ${data.start?.slice(0, 16)?.replace("T", " ")}`,
-        data.end ? `End: ${data.end.slice(0, 16).replace("T", " ")}` : null,
+        `Start: ${data.start?.toISOString()}`,
+        data.end ? `End: ${data.end.toISOString()}` : null,
         data.location ? `Location: ${data.location}` : null,
         data.description ? `\n${data.description}` : null,
         data.url ? `\n${data.url}` : null,
@@ -139,8 +139,8 @@ export default {
       }
       const parts = [
         data.title,
-        `Start: ${data.start?.slice(0, 16)?.replace("T", " ")}`,
-        data.end ? `End: ${data.end.slice(0, 16).replace("T", " ")}` : null,
+        `Start: ${data.start?.toISOString()}`,
+        data.end ? `End: ${data.end.toISOString()}` : null,
         data.location ? `Location: ${data.location}` : null,
         data.description ? `\n${data.description}` : null,
         data.url ? `\n${data.url}` : null,
@@ -230,7 +230,7 @@ export default {
     ) {
       const { data, error } = await withCache(
         `events:list:${limit}:${sanitizeCacheKey(from ?? "")}`,
-        () => getApiEvents({ query: { limit, from } }),
+        () => getApiEvents({ query: { limit, from: from ? new Date(from) : undefined } }),
         600,
         execCtx,
       );
@@ -239,7 +239,7 @@ export default {
       const keyboard = new InlineKeyboard();
       for (const e of data.items) {
         keyboard
-          .text(`${e.title} (${e.start?.slice(0, 10)})`, `event:${e.id}`)
+          .text(`${e.title} (${e.start?.toLocaleDateString("sv-SE")})`, `event:${e.id}`)
           .row();
       }
       return ctx.reply("Upcoming events:", { reply_markup: keyboard });
@@ -256,8 +256,8 @@ export default {
       if (!data) return ctx.reply("Event not found.");
       const parts = [
         data.title,
-        `Start: ${data.start?.slice(0, 16)?.replace("T", " ")}`,
-        data.end ? `End: ${data.end.slice(0, 16).replace("T", " ")}` : null,
+        `Start: ${data.start?.toISOString()}`,
+        data.end ? `End: ${data.end.toISOString()}` : null,
         data.location ? `Location: ${data.location}` : null,
         data.description ? `\n${data.description}` : null,
         data.url ? `\n${data.url}` : null,
@@ -305,7 +305,7 @@ export default {
           const from = args.from as string | undefined;
           const { data, error } = await withCache(
             `events:list:${limit}:${sanitizeCacheKey(from ?? "")}`,
-            () => getApiEvents({ query: { limit, from } }),
+            () => getApiEvents({ query: { limit, from: from ? new Date(from) : undefined } }),
             600,
             execCtx,
           );

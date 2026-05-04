@@ -4,72 +4,27 @@ export type ClientOptions = {
   baseUrl: `${string}://${string}` | (string & {});
 };
 
-export type EventSummary = {
-  id?: number;
-  title?: string;
-  start?: string;
-  end?: string | null;
-  location?: string;
-  url?: string;
-  previewImageUrl?: string | null;
-};
-
 export type EventDetail = EventSummary & {
   description?: string;
 };
 
-export type Group = {
+export type EventSummary = {
+  end?: Date | null;
   id?: number;
-  name?: string;
-  slug?: string;
-  description?: string | null;
-  domain?: string | null;
+  location?: string;
+  previewImageUrl?: string | null;
+  start?: Date;
+  title?: string;
   url?: string;
 };
 
-export type GetApiStatusData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/status";
-};
-
-export type GetApiStatusResponses = {
-  /**
-   * OK
-   */
-  200: string;
-};
-
-export type GetApiStatusResponse =
-  GetApiStatusResponses[keyof GetApiStatusResponses];
-
-export type GetApiTranslationsData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/translations";
-};
-
-export type GetApiTranslationsResponses = {
-  /**
-   * OK
-   */
-  200: unknown;
-};
-
-export type GetApiGlossaryData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/glossary";
-};
-
-export type GetApiGlossaryResponses = {
-  /**
-   * OK
-   */
-  200: unknown;
+export type Group = {
+  description?: string | null;
+  domain?: string | null;
+  id?: number;
+  name?: string;
+  slug?: string;
+  url?: string;
 };
 
 export type DeleteApiAuthTokenData = {
@@ -121,62 +76,6 @@ export type PostApiAuthTokenResponses = {
 
 export type PostApiAuthTokenResponse =
   PostApiAuthTokenResponses[keyof PostApiAuthTokenResponses];
-
-export type GetApiEventsData = {
-  body?: never;
-  path?: never;
-  query?: {
-    locale?: string;
-    limit?: number;
-    offset?: number;
-    from?: string;
-    to?: string;
-  };
-  url: "/api/events";
-};
-
-export type GetApiEventsResponses = {
-  /**
-   * OK
-   */
-  200: {
-    items?: Array<EventSummary>;
-    total?: number;
-    limit?: number;
-    offset?: number;
-  };
-};
-
-export type GetApiEventsResponse =
-  GetApiEventsResponses[keyof GetApiEventsResponses];
-
-export type GetApiEventsByIdData = {
-  body?: never;
-  path: {
-    id: number;
-  };
-  query?: {
-    locale?: string;
-  };
-  url: "/api/events/{id}";
-};
-
-export type GetApiEventsByIdErrors = {
-  /**
-   * Not found
-   */
-  404: unknown;
-};
-
-export type GetApiEventsByIdResponses = {
-  /**
-   * OK
-   */
-  200: EventDetail;
-};
-
-export type GetApiEventsByIdResponse =
-  GetApiEventsByIdResponses[keyof GetApiEventsByIdResponses];
 
 export type GetApiCmsData = {
   body?: never;
@@ -310,98 +209,70 @@ export type PutApiCmsByIdBlocksByBlockIdResponses = {
   200: unknown;
 };
 
-export type GetApiLogsData = {
+export type GetApiEventsData = {
   body?: never;
   path?: never;
-  query?: never;
-  url: "/api/logs";
+  query?: {
+    locale?: string;
+    limit?: number;
+    offset?: number;
+    from?: Date;
+    to?: Date;
+  };
+  url: "/api/events";
 };
 
-export type GetApiLogsResponses = {
+export type GetApiEventsResponses = {
   /**
    * OK
    */
-  200: unknown;
+  200: {
+    items?: Array<EventSummary>;
+    limit?: number;
+    offset?: number;
+    total?: number;
+  };
 };
 
-export type GetApiLogsSystemData = {
+export type GetApiEventsResponse =
+  GetApiEventsResponses[keyof GetApiEventsResponses];
+
+export type GetApiEventsByIdData = {
   body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/logs/system";
+  path: {
+    id: number;
+  };
+  query?: {
+    locale?: string;
+  };
+  url: "/api/events/{id}";
 };
 
-export type GetApiLogsSystemErrors = {
+export type GetApiEventsByIdErrors = {
   /**
-   * Bad request - limit out of range or non-numeric
+   * Not found
    */
-  400: unknown;
+  404: unknown;
 };
 
-export type GetApiLogsSystemResponses = {
+export type GetApiEventsByIdResponses = {
   /**
    * OK
    */
-  200: unknown;
+  200: EventDetail;
 };
 
-export type GetApiLogsActivityData = {
+export type GetApiEventsByIdResponse =
+  GetApiEventsByIdResponses[keyof GetApiEventsByIdResponses];
+
+export type GetApiGlossaryData = {
   body?: never;
   path?: never;
   query?: never;
-  url: "/api/logs/activity";
+  url: "/api/glossary";
 };
 
-export type GetApiLogsActivityErrors = {
-  /**
-   * Bad request - limit out of range or non-numeric
-   */
-  400: unknown;
-};
-
-export type GetApiLogsActivityResponses = {
-  /**
-   * OK
-   */
-  200: unknown;
-};
-
-export type GetApiLogsNotFoundData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/logs/not-found";
-};
-
-export type GetApiLogsNotFoundErrors = {
-  /**
-   * Bad request - limit out of range or non-numeric
-   */
-  400: unknown;
-};
-
-export type GetApiLogsNotFoundResponses = {
-  /**
-   * OK
-   */
-  200: unknown;
-};
-
-export type GetApiLogsCronData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/logs/cron";
-};
-
-export type GetApiLogsCronErrors = {
-  /**
-   * Bad request - limit out of range or non-numeric
-   */
-  400: unknown;
-};
-
-export type GetApiLogsCronResponses = {
+export type GetApiGlossaryResponses = {
   /**
    * OK
    */
@@ -460,3 +331,132 @@ export type GetApiGroupsBySlugResponses = {
 
 export type GetApiGroupsBySlugResponse =
   GetApiGroupsBySlugResponses[keyof GetApiGroupsBySlugResponses];
+
+export type GetApiLogsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/logs";
+};
+
+export type GetApiLogsResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type GetApiLogsActivityData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/logs/activity";
+};
+
+export type GetApiLogsActivityErrors = {
+  /**
+   * Bad request - limit out of range or non-numeric
+   */
+  400: unknown;
+};
+
+export type GetApiLogsActivityResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type GetApiLogsCronData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/logs/cron";
+};
+
+export type GetApiLogsCronErrors = {
+  /**
+   * Bad request - limit out of range or non-numeric
+   */
+  400: unknown;
+};
+
+export type GetApiLogsCronResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type GetApiLogsNotFoundData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/logs/not-found";
+};
+
+export type GetApiLogsNotFoundErrors = {
+  /**
+   * Bad request - limit out of range or non-numeric
+   */
+  400: unknown;
+};
+
+export type GetApiLogsNotFoundResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type GetApiLogsSystemData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/logs/system";
+};
+
+export type GetApiLogsSystemErrors = {
+  /**
+   * Bad request - limit out of range or non-numeric
+   */
+  400: unknown;
+};
+
+export type GetApiLogsSystemResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type GetApiStatusData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/status";
+};
+
+export type GetApiStatusResponses = {
+  /**
+   * OK
+   */
+  200: string;
+};
+
+export type GetApiStatusResponse =
+  GetApiStatusResponses[keyof GetApiStatusResponses];
+
+export type GetApiTranslationsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/translations";
+};
+
+export type GetApiTranslationsResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
