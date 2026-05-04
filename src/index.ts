@@ -74,7 +74,7 @@ export default {
       const from = args[1] ?? undefined;
 
       const { data, error } = await withCache(
-        `events:list:${limit}:${from ?? ""}`,
+        `events:list:${limit}:${sanitizeCacheKey(from ?? "")}`,
         () => getApiEvents({ query: { limit, from } }),
         600,
         execCtx,
@@ -175,9 +175,13 @@ export default {
 
     bot.callbackQuery(/^group:(.+)$/, async (ctx) => {
       const slug = ctx.match[1];
+      if (!validateSlug(slug)) {
+        await ctx.answerCallbackQuery();
+        return;
+      }
       await ctx.answerCallbackQuery();
       const { data, error } = await withCache(
-        `groups:${slug}`,
+        `groups:${sanitizeCacheKey(slug)}`,
         () => getApiGroupsBySlug({ path: { slug } }),
         3600,
         execCtx,
@@ -201,8 +205,11 @@ export default {
       if (!slug) {
         return ctx.reply("Usage: /group <slug>");
       }
+      if (!validateSlug(slug)) {
+        return ctx.reply("Invalid group slug.");
+      }
       const { data, error } = await withCache(
-        `groups:${slug}`,
+        `groups:${sanitizeCacheKey(slug)}`,
         () => getApiGroupsBySlug({ path: { slug } }),
         3600,
         execCtx,
@@ -233,7 +240,7 @@ export default {
       from: string | undefined,
     ) {
       const { data, error } = await withCache(
-        `events:list:${limit}:${from ?? ""}`,
+        `events:list:${limit}:${sanitizeCacheKey(from ?? "")}`,
         () => getApiEvents({ query: { limit, from } }),
         600,
         execCtx,
@@ -287,7 +294,7 @@ export default {
 
     async function handleGroup(ctx: Context, slug: string) {
       const { data, error } = await withCache(
-        `groups:${slug}`,
+        `groups:${sanitizeCacheKey(slug)}`,
         () => getApiGroupsBySlug({ path: { slug } }),
         3600,
         execCtx,
@@ -308,7 +315,7 @@ export default {
           const limit = (args.limit as number) ?? 20;
           const from = args.from as string | undefined;
           const { data, error } = await withCache(
-            `events:list:${limit}:${from ?? ""}`,
+            `events:list:${limit}:${sanitizeCacheKey(from ?? "")}`,
             () => getApiEvents({ query: { limit, from } }),
             600,
             execCtx,
@@ -366,7 +373,7 @@ export default {
         case "get_group": {
           const slug = args.slug as string;
           const { data, error } = await withCache(
-            `groups:${slug}`,
+            `groups:${sanitizeCacheKey(slug)}`,
             () => getApiGroupsBySlug({ path: { slug } }),
             3600,
             execCtx,
@@ -446,6 +453,7 @@ export default {
         case "group": {
           const slug = args.split(/\s+/)[0];
           if (!slug) return ctx.reply("Usage: /group <slug>");
+          if (!validateSlug(slug)) return ctx.reply("Invalid group slug.");
           return handleGroup(ctx, slug);
         }
         default:
@@ -498,6 +506,16 @@ async function withCache<T>(
   }
 
   return result;
+}
+
+const VALID_SLUG = /^[a-zA-Z0-9_-]{1,100}$/;
+
+function sanitizeCacheKey(s: string): string {
+  return s.slice(0, 60).replace(/[^a-zA-Z0-9:_-]/g, "_");
+}
+
+function validateSlug(slug: string): boolean {
+  return VALID_SLUG.test(slug);
 }
 
 function errMsg(error: unknown): string {
