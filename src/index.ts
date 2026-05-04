@@ -24,6 +24,11 @@ export default {
     env: Env,
     execCtx: ExecutionContext,
   ): Promise<Response> {
+    const url = new URL(request.url);
+    if (url.pathname === "/health") {
+      return new Response("OK", { status: 200 });
+    }
+
     client.setConfig({
       baseUrl: env.API_BASE_URL,
     });
