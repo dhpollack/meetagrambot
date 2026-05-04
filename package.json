@@ -26,6 +26,7 @@
     "wrangler": "^4.87.0"
   },
   "dependencies": {
+    "@grammyjs/ratelimiter": "^1.2.1",
     "grammy": "^1.42.0"
   }
 }

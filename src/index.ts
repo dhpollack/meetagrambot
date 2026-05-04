@@ -1,4 +1,5 @@
 import { Bot, type Context, InlineKeyboard, webhookCallback } from "grammy";
+import { limit } from "@grammyjs/ratelimiter";
 import { interpretMessage } from "./ai";
 import { client } from "./api-client/client.gen";
 import {
@@ -30,6 +31,16 @@ export default {
     const bot = new Bot(env.BOT_TOKEN, {
       botInfo: JSON.parse(env.BOT_INFO),
     });
+
+    bot.use(
+      limit({
+        timeFrame: 3000,
+        limit: 3,
+        onLimitExceeded: async (ctx) => {
+          await ctx.reply("Too many requests, please wait a moment.");
+        },
+      }),
+    );
 
     bot.command("start", (ctx) =>
       ctx.reply(
