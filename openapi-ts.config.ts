@@ -9,6 +9,13 @@ export default defineConfig({
   plugins: [
     '@hey-api/client-fetch',
     '@hey-api/typescript',
-    '@hey-api/sdk',
+    {
+      dates: true,
+      name: '@hey-api/transformers',
+    },
+    {
+      name: '@hey-api/sdk',
+      transformer: true,
+    }
   ],
 });

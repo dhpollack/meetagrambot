@@ -4,29 +4,6 @@ export type ClientOptions = {
   baseUrl: `${string}://${string}` | (string & {});
 };
 
-export type EventSummary = {
-  id?: number;
-  title?: string;
-  start?: string;
-  end?: string | null;
-  location?: string;
-  url?: string;
-  previewImageUrl?: string | null;
-};
-
-export type EventDetail = EventSummary & {
-  description?: string;
-};
-
-export type Group = {
-  id?: number;
-  name?: string;
-  slug?: string;
-  description?: string | null;
-  domain?: string | null;
-  url?: string;
-};
-
 export type GetApiStatusData = {
   body?: never;
   path?: never;
@@ -36,121 +13,216 @@ export type GetApiStatusData = {
 
 export type GetApiStatusResponses = {
   /**
-   * OK
-   */
-  200: string;
-};
-
-export type GetApiStatusResponse =
-  GetApiStatusResponses[keyof GetApiStatusResponses];
-
-export type GetApiTranslationsData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/translations";
-};
-
-export type GetApiTranslationsResponses = {
-  /**
-   * OK
+   * Service is healthy
    */
   200: unknown;
 };
 
-export type GetApiGlossaryData = {
+export type GetApiV1AdminLogsCronData = {
   body?: never;
   path?: never;
-  query?: never;
-  url: "/api/glossary";
-};
-
-export type GetApiGlossaryResponses = {
-  /**
-   * OK
-   */
-  200: unknown;
-};
-
-export type DeleteApiAuthTokenData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/auth/token";
-};
-
-export type DeleteApiAuthTokenResponses = {
-  /**
-   * Revoked
-   */
-  204: void;
-};
-
-export type DeleteApiAuthTokenResponse =
-  DeleteApiAuthTokenResponses[keyof DeleteApiAuthTokenResponses];
-
-export type PostApiAuthTokenData = {
-  body: {
-    email: string;
-    password: string;
+  query?: {
+    limit?: number;
   };
-  path?: never;
-  query?: never;
-  url: "/api/auth/token";
+  url: "/api/v1/admin/logs/cron";
 };
 
-export type PostApiAuthTokenErrors = {
+export type GetApiV1AdminLogsCronErrors = {
   /**
-   * Invalid credentials
+   * Missing or invalid bearer token
    */
   401: unknown;
   /**
-   * Too many attempts
+   * Insufficient role
    */
-  429: unknown;
+  403: unknown;
 };
 
-export type PostApiAuthTokenResponses = {
+export type GetApiV1AdminLogsCronResponses = {
   /**
-   * Token issued
+   * Paginated cron log list
    */
-  200: {
-    token?: string;
-  };
+  200: unknown;
 };
 
-export type PostApiAuthTokenResponse =
-  PostApiAuthTokenResponses[keyof PostApiAuthTokenResponses];
+export type GetApiV1AdminLogsCronByIdData = {
+  body?: never;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: "/api/v1/admin/logs/cron/{id}";
+};
 
-export type GetApiEventsData = {
+export type GetApiV1AdminLogsCronByIdErrors = {
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role
+   */
+  403: unknown;
+  /**
+   * Cron log not found
+   */
+  404: unknown;
+};
+
+export type GetApiV1AdminLogsCronByIdResponses = {
+  /**
+   * Cron log detail
+   */
+  200: unknown;
+};
+
+export type GetApiV1AdminLogsSendlogData = {
+  body?: never;
+  path?: never;
+  query?: {
+    limit?: number;
+  };
+  url: "/api/v1/admin/logs/sendlog";
+};
+
+export type GetApiV1AdminLogsSendlogErrors = {
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role
+   */
+  403: unknown;
+};
+
+export type GetApiV1AdminLogsSendlogResponses = {
+  /**
+   * Paginated sendlog list
+   */
+  200: unknown;
+};
+
+export type GetApiV1AdminLogsSendlogByIdData = {
+  body?: never;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: "/api/v1/admin/logs/sendlog/{id}";
+};
+
+export type GetApiV1AdminLogsSendlogByIdErrors = {
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role
+   */
+  403: unknown;
+  /**
+   * Sendlog entry not found
+   */
+  404: unknown;
+};
+
+export type GetApiV1AdminLogsSendlogByIdResponses = {
+  /**
+   * Sendlog detail
+   */
+  200: unknown;
+};
+
+export type GetApiV1AdminSecurityIncidentsData = {
+  body?: never;
+  path?: never;
+  query?: {
+    limit?: number;
+    /**
+     * ISO-8601 datetime lower bound on endedAt
+     */
+    since?: Date;
+  };
+  url: "/api/v1/admin/security/incidents";
+};
+
+export type GetApiV1AdminSecurityIncidentsErrors = {
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role
+   */
+  403: unknown;
+};
+
+export type GetApiV1AdminSecurityIncidentsResponses = {
+  /**
+   * Incident list
+   */
+  200: unknown;
+};
+
+export type GetApiV1AdminSecurityIncidentsByIdData = {
+  body?: never;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: "/api/v1/admin/security/incidents/{id}";
+};
+
+export type GetApiV1AdminSecurityIncidentsByIdErrors = {
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role
+   */
+  403: unknown;
+  /**
+   * Incident not found
+   */
+  404: unknown;
+};
+
+export type GetApiV1AdminSecurityIncidentsByIdResponses = {
+  /**
+   * Incident detail
+   */
+  200: unknown;
+};
+
+export type GetApiV1EventsData = {
   body?: never;
   path?: never;
   query?: {
     locale?: string;
+    /**
+     * ISO-8601 lower bound (default: now)
+     */
+    from?: Date;
+    /**
+     * ISO-8601 upper bound
+     */
+    to?: Date;
     limit?: number;
     offset?: number;
-    from?: string;
-    to?: string;
   };
-  url: "/api/events";
+  url: "/api/v1/events";
 };
 
-export type GetApiEventsResponses = {
+export type GetApiV1EventsResponses = {
   /**
-   * OK
+   * Paginated event list
    */
-  200: {
-    items?: Array<EventSummary>;
-    total?: number;
-    limit?: number;
-    offset?: number;
-  };
+  200: unknown;
 };
 
-export type GetApiEventsResponse =
-  GetApiEventsResponses[keyof GetApiEventsResponses];
-
-export type GetApiEventsByIdData = {
+export type GetApiV1EventsByIdData = {
   body?: never;
   path: {
     id: number;
@@ -158,305 +230,414 @@ export type GetApiEventsByIdData = {
   query?: {
     locale?: string;
   };
-  url: "/api/events/{id}";
+  url: "/api/v1/events/{id}";
 };
 
-export type GetApiEventsByIdErrors = {
+export type GetApiV1EventsByIdErrors = {
   /**
-   * Not found
+   * Event not found or not visible in current context
    */
   404: unknown;
 };
 
-export type GetApiEventsByIdResponses = {
+export type GetApiV1EventsByIdResponses = {
   /**
-   * OK
-   */
-  200: EventDetail;
-};
-
-export type GetApiEventsByIdResponse =
-  GetApiEventsByIdResponses[keyof GetApiEventsByIdResponses];
-
-export type GetApiCmsData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/cms/";
-};
-
-export type GetApiCmsResponses = {
-  /**
-   * OK
+   * Event detail
    */
   200: unknown;
 };
 
-export type PostApiCmsData = {
-  body?: never;
+export type PostApiV1EventsByIdCommentsData = {
+  body: {
+    content?: string;
+  };
   path?: never;
   query?: never;
-  url: "/api/cms/";
+  url: "/api/v1/events/{id}/comments";
 };
 
-export type PostApiCmsResponses = {
+export type PostApiV1EventsByIdCommentsErrors = {
   /**
-   * Created
+   * Empty content
+   */
+  400: unknown;
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Not allowed
+   */
+  403: unknown;
+  /**
+   * Event not found
+   */
+  404: unknown;
+};
+
+export type PostApiV1EventsByIdCommentsResponses = {
+  /**
+   * Comment created
    */
   201: unknown;
 };
 
-export type DeleteApiCmsByIdData = {
+export type DeleteApiV1EventsByIdCommentsByCommentIdData = {
   body?: never;
-  path: {
-    id: number;
-  };
+  path?: never;
   query?: never;
-  url: "/api/cms/{id}";
+  url: "/api/v1/events/{id}/comments/{commentId}";
 };
 
-export type DeleteApiCmsByIdResponses = {
+export type DeleteApiV1EventsByIdCommentsByCommentIdErrors = {
   /**
-   * Deleted
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Not your comment and not admin
+   */
+  403: unknown;
+  /**
+   * Comment or event not found
+   */
+  404: unknown;
+};
+
+export type DeleteApiV1EventsByIdCommentsByCommentIdResponses = {
+  /**
+   * Comment deleted
    */
   204: void;
 };
 
-export type DeleteApiCmsByIdResponse =
-  DeleteApiCmsByIdResponses[keyof DeleteApiCmsByIdResponses];
+export type DeleteApiV1EventsByIdCommentsByCommentIdResponse =
+  DeleteApiV1EventsByIdCommentsByCommentIdResponses[keyof DeleteApiV1EventsByIdCommentsByCommentIdResponses];
 
-export type GetApiCmsByIdData = {
-  body?: never;
-  path: {
-    id: number;
+export type PostApiV1EventsByIdImagesData = {
+  body: {
+    file?: Blob | File;
   };
+  path?: never;
   query?: never;
-  url: "/api/cms/{id}";
+  url: "/api/v1/events/{id}/images";
 };
 
-export type GetApiCmsByIdResponses = {
+export type PostApiV1EventsByIdImagesErrors = {
   /**
-   * OK
+   * No file or unsupported format
    */
-  200: unknown;
-};
-
-export type PutApiCmsByIdData = {
-  body?: never;
-  path: {
-    id: number;
-  };
-  query?: never;
-  url: "/api/cms/{id}";
-};
-
-export type PutApiCmsByIdResponses = {
+  400: unknown;
   /**
-   * OK
+   * Missing or invalid Bearer token
    */
-  200: unknown;
-};
-
-export type PostApiCmsByIdBlocksData = {
-  body?: never;
-  path: {
-    id: number;
-  };
-  query?: never;
-  url: "/api/cms/{id}/blocks";
-};
-
-export type PostApiCmsByIdBlocksResponses = {
+  401: unknown;
   /**
-   * Created
+   * Not allowed
+   */
+  403: unknown;
+  /**
+   * Event not found
+   */
+  404: unknown;
+};
+
+export type PostApiV1EventsByIdImagesResponses = {
+  /**
+   * Image uploaded
    */
   201: unknown;
 };
 
-export type DeleteApiCmsByIdBlocksByBlockIdData = {
+export type DeleteApiV1EventsByIdImagesByImageIdData = {
   body?: never;
-  path: {
-    id: number;
-    blockId: number;
-  };
+  path?: never;
   query?: never;
-  url: "/api/cms/{id}/blocks/{blockId}";
+  url: "/api/v1/events/{id}/images/{imageId}";
 };
 
-export type DeleteApiCmsByIdBlocksByBlockIdResponses = {
+export type DeleteApiV1EventsByIdImagesByImageIdErrors = {
   /**
-   * Deleted
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Not your image and not admin
+   */
+  403: unknown;
+  /**
+   * Image or event not found
+   */
+  404: unknown;
+};
+
+export type DeleteApiV1EventsByIdImagesByImageIdResponses = {
+  /**
+   * Image deleted
    */
   204: void;
 };
 
-export type DeleteApiCmsByIdBlocksByBlockIdResponse =
-  DeleteApiCmsByIdBlocksByBlockIdResponses[keyof DeleteApiCmsByIdBlocksByBlockIdResponses];
+export type DeleteApiV1EventsByIdImagesByImageIdResponse =
+  DeleteApiV1EventsByIdImagesByImageIdResponses[keyof DeleteApiV1EventsByIdImagesByImageIdResponses];
 
-export type PutApiCmsByIdBlocksByBlockIdData = {
+export type DeleteApiV1EventsByIdRsvpData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/v1/events/{id}/rsvp";
+};
+
+export type DeleteApiV1EventsByIdRsvpErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Not allowed
+   */
+  403: unknown;
+  /**
+   * Event not found
+   */
+  404: unknown;
+  /**
+   * Event canceled or already started
+   */
+  409: unknown;
+};
+
+export type DeleteApiV1EventsByIdRsvpResponses = {
+  /**
+   * RSVP removed (or already absent)
+   */
+  200: unknown;
+};
+
+export type PostApiV1EventsByIdRsvpData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/v1/events/{id}/rsvp";
+};
+
+export type PostApiV1EventsByIdRsvpErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Not allowed (group membership / blocked)
+   */
+  403: unknown;
+  /**
+   * Event not found
+   */
+  404: unknown;
+  /**
+   * Event canceled or already started
+   */
+  409: unknown;
+};
+
+export type PostApiV1EventsByIdRsvpResponses = {
+  /**
+   * RSVP added (or already present)
+   */
+  200: unknown;
+};
+
+export type GetApiV1GroupsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/v1/groups";
+};
+
+export type GetApiV1GroupsResponses = {
+  /**
+   * Array of group summaries
+   */
+  200: unknown;
+};
+
+export type GetApiV1GroupsByGroupSlugData = {
   body?: never;
   path: {
-    id: number;
-    blockId: number;
+    groupSlug: string;
   };
   query?: never;
-  url: "/api/cms/{id}/blocks/{blockId}";
+  url: "/api/v1/groups/{groupSlug}";
 };
 
-export type PutApiCmsByIdBlocksByBlockIdResponses = {
+export type GetApiV1GroupsByGroupSlugErrors = {
   /**
-   * OK
-   */
-  200: unknown;
-};
-
-export type GetApiLogsData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/logs";
-};
-
-export type GetApiLogsResponses = {
-  /**
-   * OK
-   */
-  200: unknown;
-};
-
-export type GetApiLogsSystemData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/logs/system";
-};
-
-export type GetApiLogsSystemErrors = {
-  /**
-   * Bad request - limit out of range or non-numeric
-   */
-  400: unknown;
-};
-
-export type GetApiLogsSystemResponses = {
-  /**
-   * OK
-   */
-  200: unknown;
-};
-
-export type GetApiLogsActivityData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/logs/activity";
-};
-
-export type GetApiLogsActivityErrors = {
-  /**
-   * Bad request - limit out of range or non-numeric
-   */
-  400: unknown;
-};
-
-export type GetApiLogsActivityResponses = {
-  /**
-   * OK
-   */
-  200: unknown;
-};
-
-export type GetApiLogsNotFoundData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/logs/not-found";
-};
-
-export type GetApiLogsNotFoundErrors = {
-  /**
-   * Bad request - limit out of range or non-numeric
-   */
-  400: unknown;
-};
-
-export type GetApiLogsNotFoundResponses = {
-  /**
-   * OK
-   */
-  200: unknown;
-};
-
-export type GetApiLogsCronData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/logs/cron";
-};
-
-export type GetApiLogsCronErrors = {
-  /**
-   * Bad request - limit out of range or non-numeric
-   */
-  400: unknown;
-};
-
-export type GetApiLogsCronResponses = {
-  /**
-   * OK
-   */
-  200: unknown;
-};
-
-export type GetApiGroupsData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/groups";
-};
-
-export type GetApiGroupsErrors = {
-  /**
-   * Plugin not active
+   * Group not found
    */
   404: unknown;
 };
 
-export type GetApiGroupsResponses = {
+export type GetApiV1GroupsByGroupSlugResponses = {
   /**
-   * OK
+   * Group detail
    */
-  200: {
-    items?: Array<Group>;
-    total?: number;
-  };
+  200: unknown;
 };
 
-export type GetApiGroupsResponse =
-  GetApiGroupsResponses[keyof GetApiGroupsResponses];
-
-export type GetApiGroupsBySlugData = {
+export type GetApiV1GroupsByGroupSlugAdminMembersData = {
   body?: never;
   path: {
-    slug: string;
+    groupSlug: string;
   };
   query?: never;
-  url: "/api/groups/{slug}";
+  url: "/api/v1/groups/{groupSlug}/admin/members";
 };
 
-export type GetApiGroupsBySlugErrors = {
+export type GetApiV1GroupsByGroupSlugAdminMembersErrors = {
   /**
-   * Not found
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Caller is not Owner/Organizer of this group
+   */
+  403: unknown;
+  /**
+   * Group not found
    */
   404: unknown;
 };
 
-export type GetApiGroupsBySlugResponses = {
+export type GetApiV1GroupsByGroupSlugAdminMembersResponses = {
   /**
-   * OK
+   * Members list
    */
-  200: Group;
+  200: unknown;
 };
 
-export type GetApiGroupsBySlugResponse =
-  GetApiGroupsBySlugResponses[keyof GetApiGroupsBySlugResponses];
+export type GetApiV1GroupsByGroupSlugAdminSettingsData = {
+  body?: never;
+  path: {
+    groupSlug: string;
+  };
+  query?: never;
+  url: "/api/v1/groups/{groupSlug}/admin/settings";
+};
+
+export type GetApiV1GroupsByGroupSlugAdminSettingsErrors = {
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Caller is not Owner/Organizer of this group
+   */
+  403: unknown;
+  /**
+   * Group not found
+   */
+  404: unknown;
+};
+
+export type GetApiV1GroupsByGroupSlugAdminSettingsResponses = {
+  /**
+   * Group settings
+   */
+  200: unknown;
+};
+
+export type GetApiV1GroupsByGroupSlugCmsData = {
+  body?: never;
+  path: {
+    groupSlug: string;
+  };
+  query?: {
+    /**
+     * Two-letter language code. If omitted, each item's first available language is used. If given but the page lacks that language, falls back to 'en' (or the first available).
+     */
+    language?: string;
+  };
+  url: "/api/v1/groups/{groupSlug}/cms";
+};
+
+export type GetApiV1GroupsByGroupSlugCmsErrors = {
+  /**
+   * Group not found
+   */
+  404: unknown;
+};
+
+export type GetApiV1GroupsByGroupSlugCmsResponses = {
+  /**
+   * List of CMS pages
+   */
+  200: unknown;
+};
+
+export type GetApiV1GroupsByGroupSlugCmsByCmsSlugData = {
+  body?: never;
+  path: {
+    groupSlug: string;
+    cmsSlug: string;
+  };
+  query?: {
+    language?: string;
+  };
+  url: "/api/v1/groups/{groupSlug}/cms/{cmsSlug}";
+};
+
+export type GetApiV1GroupsByGroupSlugCmsByCmsSlugErrors = {
+  /**
+   * Group not found, or page not found / not visible in this group
+   */
+  404: unknown;
+};
+
+export type GetApiV1GroupsByGroupSlugCmsByCmsSlugResponses = {
+  /**
+   * CMS page metadata
+   */
+  200: unknown;
+};
+
+export type GetApiV1MeData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/v1/me";
+};
+
+export type GetApiV1MeErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+};
+
+export type GetApiV1MeResponses = {
+  /**
+   * User profile
+   */
+  200: unknown;
+};
+
+export type GetApiV1MeRsvpsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/v1/me/rsvps";
+};
+
+export type GetApiV1MeRsvpsErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+};
+
+export type GetApiV1MeRsvpsResponses = {
+  /**
+   * Array of upcoming events the user has RSVPed to
+   */
+  200: unknown;
+};
