@@ -7,6 +7,22 @@ import {
   type TDataShape,
 } from "./client";
 import { client } from "./client.gen";
+import {
+  getApiV1AdminLogsCronByIdResponseTransformer,
+  getApiV1AdminLogsCronResponseTransformer,
+  getApiV1AdminLogsSendlogByIdResponseTransformer,
+  getApiV1AdminLogsSendlogResponseTransformer,
+  getApiV1AdminSecurityIncidentsByIdResponseTransformer,
+  getApiV1AdminSecurityIncidentsResponseTransformer,
+  getApiV1EventsByIdResponseTransformer,
+  getApiV1EventsResponseTransformer,
+  getApiV1GroupsByGroupSlugAdminMembersResponseTransformer,
+  getApiV1GroupsByGroupSlugAdminSettingsResponseTransformer,
+  getApiV1GroupsByGroupSlugResponseTransformer,
+  getApiV1MeResponseTransformer,
+  getApiV1MeRsvpsResponseTransformer,
+  postApiV1EventsByIdCommentsResponseTransformer,
+} from "./transformers.gen";
 import type {
   DeleteApiV1EventsByIdCommentsByCommentIdData,
   DeleteApiV1EventsByIdCommentsByCommentIdErrors,
@@ -115,6 +131,7 @@ export const getApiV1AdminLogsCron = <ThrowOnError extends boolean = false>(
     GetApiV1AdminLogsCronErrors,
     ThrowOnError
   >({
+    responseTransformer: getApiV1AdminLogsCronResponseTransformer,
     security: [
       { scheme: "bearer", type: "http" },
       { scheme: "bearer", type: "http" },
@@ -134,6 +151,7 @@ export const getApiV1AdminLogsCronById = <ThrowOnError extends boolean = false>(
     GetApiV1AdminLogsCronByIdErrors,
     ThrowOnError
   >({
+    responseTransformer: getApiV1AdminLogsCronByIdResponseTransformer,
     security: [
       { scheme: "bearer", type: "http" },
       { scheme: "bearer", type: "http" },
@@ -153,6 +171,7 @@ export const getApiV1AdminLogsSendlog = <ThrowOnError extends boolean = false>(
     GetApiV1AdminLogsSendlogErrors,
     ThrowOnError
   >({
+    responseTransformer: getApiV1AdminLogsSendlogResponseTransformer,
     security: [
       { scheme: "bearer", type: "http" },
       { scheme: "bearer", type: "http" },
@@ -174,6 +193,7 @@ export const getApiV1AdminLogsSendlogById = <
     GetApiV1AdminLogsSendlogByIdErrors,
     ThrowOnError
   >({
+    responseTransformer: getApiV1AdminLogsSendlogByIdResponseTransformer,
     security: [
       { scheme: "bearer", type: "http" },
       { scheme: "bearer", type: "http" },
@@ -195,6 +215,7 @@ export const getApiV1AdminSecurityIncidents = <
     GetApiV1AdminSecurityIncidentsErrors,
     ThrowOnError
   >({
+    responseTransformer: getApiV1AdminSecurityIncidentsResponseTransformer,
     security: [
       { scheme: "bearer", type: "http" },
       { scheme: "bearer", type: "http" },
@@ -216,6 +237,7 @@ export const getApiV1AdminSecurityIncidentsById = <
     GetApiV1AdminSecurityIncidentsByIdErrors,
     ThrowOnError
   >({
+    responseTransformer: getApiV1AdminSecurityIncidentsByIdResponseTransformer,
     security: [
       { scheme: "bearer", type: "http" },
       { scheme: "bearer", type: "http" },
@@ -234,7 +256,11 @@ export const getApiV1Events = <ThrowOnError extends boolean = false>(
     GetApiV1EventsResponses,
     unknown,
     ThrowOnError
-  >({ url: "/api/v1/events", ...options });
+  >({
+    responseTransformer: getApiV1EventsResponseTransformer,
+    url: "/api/v1/events",
+    ...options,
+  });
 
 /**
  * Get a single event by ID
@@ -246,7 +272,11 @@ export const getApiV1EventsById = <ThrowOnError extends boolean = false>(
     GetApiV1EventsByIdResponses,
     GetApiV1EventsByIdErrors,
     ThrowOnError
-  >({ url: "/api/v1/events/{id}", ...options });
+  >({
+    responseTransformer: getApiV1EventsByIdResponseTransformer,
+    url: "/api/v1/events/{id}",
+    ...options,
+  });
 
 /**
  * Post a comment on an event
@@ -261,6 +291,7 @@ export const postApiV1EventsByIdComments = <
     PostApiV1EventsByIdCommentsErrors,
     ThrowOnError
   >({
+    responseTransformer: postApiV1EventsByIdCommentsResponseTransformer,
     security: [
       { scheme: "bearer", type: "http" },
       { scheme: "bearer", type: "http" },
@@ -399,7 +430,11 @@ export const getApiV1GroupsByGroupSlug = <ThrowOnError extends boolean = false>(
     GetApiV1GroupsByGroupSlugResponses,
     GetApiV1GroupsByGroupSlugErrors,
     ThrowOnError
-  >({ url: "/api/v1/groups/{groupSlug}", ...options });
+  >({
+    responseTransformer: getApiV1GroupsByGroupSlugResponseTransformer,
+    url: "/api/v1/groups/{groupSlug}",
+    ...options,
+  });
 
 /**
  * List members of a group
@@ -414,6 +449,8 @@ export const getApiV1GroupsByGroupSlugAdminMembers = <
     GetApiV1GroupsByGroupSlugAdminMembersErrors,
     ThrowOnError
   >({
+    responseTransformer:
+      getApiV1GroupsByGroupSlugAdminMembersResponseTransformer,
     security: [
       { scheme: "bearer", type: "http" },
       { scheme: "bearer", type: "http" },
@@ -435,6 +472,8 @@ export const getApiV1GroupsByGroupSlugAdminSettings = <
     GetApiV1GroupsByGroupSlugAdminSettingsErrors,
     ThrowOnError
   >({
+    responseTransformer:
+      getApiV1GroupsByGroupSlugAdminSettingsResponseTransformer,
     security: [
       { scheme: "bearer", type: "http" },
       { scheme: "bearer", type: "http" },
@@ -482,6 +521,7 @@ export const getApiV1Me = <ThrowOnError extends boolean = false>(
     GetApiV1MeErrors,
     ThrowOnError
   >({
+    responseTransformer: getApiV1MeResponseTransformer,
     security: [
       { scheme: "bearer", type: "http" },
       { scheme: "bearer", type: "http" },
@@ -501,6 +541,7 @@ export const getApiV1MeRsvps = <ThrowOnError extends boolean = false>(
     GetApiV1MeRsvpsErrors,
     ThrowOnError
   >({
+    responseTransformer: getApiV1MeRsvpsResponseTransformer,
     security: [
       { scheme: "bearer", type: "http" },
       { scheme: "bearer", type: "http" },
