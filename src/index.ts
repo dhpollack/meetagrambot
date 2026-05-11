@@ -8,12 +8,12 @@ import {
   getApiV1Groups,
   getApiV1GroupsByGroupSlug,
 } from "./api-client/sdk.gen";
-import type {
-  EventDetail,
-  EventSummary,
-  GroupDetail,
-  GroupSummary,
-} from "./api-client/types.gen";
+import type { EventDetail } from "./api-client/types.gen";
+import {
+  getApiV1EventsResponseTransformer,
+  getApiV1EventsByIdResponseTransformer,
+  getApiV1GroupsByGroupSlugResponseTransformer,
+} from "./api-client/transformers.gen";
 
 export interface Env {
   BOT_TOKEN: string;
@@ -93,6 +93,7 @@ export default {
           }),
         600,
         execCtx,
+        getApiV1EventsResponseTransformer,
       );
       if (error) {
         return ctx.reply(`Error fetching events: ${errMsg(error)}`);
@@ -120,6 +121,7 @@ export default {
         () => getApiV1EventsById({ path: { id } }),
         3600,
         execCtx,
+        getApiV1EventsByIdResponseTransformer,
       );
       if (error) {
         return ctx.reply(`Error fetching event: ${errMsg(error)}`);
@@ -155,6 +157,7 @@ export default {
         () => getApiV1EventsById({ path: { id } }),
         3600,
         execCtx,
+        getApiV1EventsByIdResponseTransformer,
       );
       if (error) {
         return ctx.reply(`Error fetching event: ${errMsg(error)}`);
@@ -207,6 +210,7 @@ export default {
         () => getApiV1GroupsByGroupSlug({ path: { groupSlug: slug } }),
         3600,
         execCtx,
+        getApiV1GroupsByGroupSlugResponseTransformer,
       );
       if (error) {
         return ctx.reply(`Error fetching group: ${errMsg(error)}`);
@@ -235,6 +239,7 @@ export default {
         () => getApiV1GroupsByGroupSlug({ path: { groupSlug: slug } }),
         3600,
         execCtx,
+        getApiV1GroupsByGroupSlugResponseTransformer,
       );
       if (error) {
         return ctx.reply(`Error fetching group: ${errMsg(error)}`);
@@ -263,6 +268,7 @@ export default {
           }),
         600,
         execCtx,
+        getApiV1EventsResponseTransformer,
       );
       if (error) return ctx.reply(`Error fetching events: ${errMsg(error)}`);
       if (!data?.items?.length) return ctx.reply("No upcoming events found.");
@@ -284,6 +290,7 @@ export default {
         () => getApiV1EventsById({ path: { id } }),
         3600,
         execCtx,
+        getApiV1EventsByIdResponseTransformer,
       );
       if (error) return ctx.reply(`Error fetching event: ${errMsg(error)}`);
       if (!data) return ctx.reply("Event not found.");
@@ -322,6 +329,7 @@ export default {
         () => getApiV1GroupsByGroupSlug({ path: { groupSlug: slug } }),
         3600,
         execCtx,
+        getApiV1GroupsByGroupSlugResponseTransformer,
       );
       if (error) return ctx.reply(`Error fetching group: ${errMsg(error)}`);
       if (!data) return ctx.reply("Group not found.");
@@ -346,6 +354,7 @@ export default {
               }),
             600,
             execCtx,
+            getApiV1EventsResponseTransformer,
           );
           if (error) return { error: errMsg(error) };
           if (!data?.items?.length) return { items: [] };
@@ -365,6 +374,7 @@ export default {
             () => getApiV1EventsById({ path: { id } }),
             3600,
             execCtx,
+            getApiV1EventsByIdResponseTransformer,
           );
           if (error) return { error: errMsg(error) };
           if (!data) return { error: "Event not found" };
@@ -401,6 +411,7 @@ export default {
             () => getApiV1GroupsByGroupSlug({ path: { groupSlug: slug } }),
             3600,
             execCtx,
+            getApiV1GroupsByGroupSlugResponseTransformer,
           );
           if (error) return { error: errMsg(error) };
           if (!data) return { error: "Group not found" };
@@ -496,12 +507,14 @@ async function withCache<T>(
   fetcher: () => Promise<{ data?: T; error?: unknown }>,
   ttl: number,
   ctx: ExecutionContext,
+  transform?: (data: T) => T | Promise<T>,
 ): Promise<{ data?: T; error?: unknown }> {
   const cacheUrl = `https://cache.internal/${key}`;
   try {
     const cached = await caches.default.match(cacheUrl);
     if (cached) {
-      return { data: (await cached.json()) as T };
+      const data = (await cached.json()) as T;
+      return { data: transform ? await transform(data) : data };
     }
   } catch {
     // Cache read failed, fall through to live API
