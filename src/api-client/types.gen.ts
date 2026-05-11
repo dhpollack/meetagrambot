@@ -4,6 +4,205 @@ export type ClientOptions = {
   baseUrl: `${string}://${string}` | (string & {});
 };
 
+export type CmsPage = {
+  languages: Array<string>;
+  linkName: string;
+  slug: string;
+  title: string;
+  webUrl: string;
+};
+
+export type CmsPageList = {
+  items: Array<CmsPage>;
+  total: number;
+};
+
+export type CommentCreated = {
+  content: string;
+  createdAt?: Date | null;
+  id: number;
+};
+
+export type CronLogDetail = CronLogSummary & {
+  tasks?: Array<{
+    [key: string]: unknown;
+  }>;
+};
+
+export type CronLogList = {
+  items: Array<CronLogSummary>;
+  total: number;
+};
+
+export type CronLogSummary = {
+  durationMs?: number | null;
+  id: number;
+  runAt: Date;
+  status: string;
+};
+
+export type ErrorResponse = {
+  error: string;
+};
+
+export type EventDetail = EventSummary & {
+  description?: string | null;
+  images?: Array<string>;
+  location?: {
+    city?: string | null;
+    name?: string | null;
+    postcode?: string | null;
+    street?: string | null;
+  } | null;
+};
+
+export type EventList = {
+  items: Array<EventSummary>;
+  limit: number;
+  offset: number;
+  total: number;
+};
+
+export type EventSummary = {
+  detailUrl: string;
+  id: number;
+  previewImageUrl?: string | null;
+  rsvpCount: number;
+  start: Date;
+  stop?: Date | null;
+  teaser?: string | null;
+  title: string;
+  type?: string | null;
+  webUrl: string;
+};
+
+export type GroupDetail = GroupSummary & {
+  createdAt?: Date | null;
+  description?: string | null;
+  languages?: Array<string>;
+  memberCount?: number;
+  previewImageUrl?: string | null;
+};
+
+export type GroupList = {
+  items: Array<GroupSummary>;
+  total: number;
+};
+
+export type GroupMember = {
+  blocked?: boolean;
+  email?: string | null;
+  id: number;
+  joinedAt?: Date | null;
+  name?: string | null;
+  role?: string | null;
+  status: string;
+  userId?: number | null;
+};
+
+export type GroupMemberList = {
+  items: Array<GroupMember>;
+  total: number;
+};
+
+export type GroupSettings = {
+  createdAt?: Date | null;
+  description?: string | null;
+  id: number;
+  name: string;
+  slug: string;
+  tags?: Array<string>;
+  updatedAt?: Date | null;
+  visibility?: string | null;
+};
+
+export type GroupSummary = {
+  detailUrl: string;
+  domain?: string | null;
+  logoUrl?: string | null;
+  name: string;
+  slug: string;
+  visibility?: string | null;
+};
+
+export type HealthStatus = {
+  status: string;
+};
+
+export type ImageUploaded = {
+  id: number;
+  url: string;
+};
+
+export type IncidentDetail = IncidentSummary & {
+  providerReports?: {
+    [key: string]: unknown;
+  } | null;
+  sessionId?: string | null;
+  userAgent?: string | null;
+};
+
+export type IncidentList = {
+  items: Array<IncidentSummary>;
+  limit: number;
+  total: number;
+};
+
+export type IncidentSummary = {
+  blockedUntil?: string | null;
+  countryCode?: string | null;
+  endedAt: Date;
+  id: number;
+  ip?: string | null;
+  severity: string;
+  startedAt: Date;
+  triggeredBy?: string | null;
+};
+
+export type MeProfile = {
+  avatarUrl?: string | null;
+  bio?: string | null;
+  createdAt?: Date | null;
+  email: string;
+  id: number;
+  locale: string;
+  name: string;
+  role: string;
+  status: string;
+};
+
+export type MeRsvpList = {
+  items: Array<EventSummary>;
+  total: number;
+};
+
+export type RsvpResult = {
+  rsvp: boolean;
+  rsvpCount: number;
+};
+
+export type SendlogDetail = SendlogSummary & {
+  errorMessage?: string | null;
+  lang?: string | null;
+  providerDispatchedAt?: Date | null;
+  sender?: string | null;
+};
+
+export type SendlogList = {
+  items: Array<SendlogSummary>;
+  limit: number;
+  total: number;
+};
+
+export type SendlogSummary = {
+  createdAt?: Date | null;
+  id: number;
+  recipient: string;
+  status: string;
+  subject: string;
+  template?: string | null;
+};
+
 export type GetApiStatusData = {
   body?: never;
   path?: never;
@@ -15,8 +214,11 @@ export type GetApiStatusResponses = {
   /**
    * Service is healthy
    */
-  200: unknown;
+  200: HealthStatus;
 };
+
+export type GetApiStatusResponse =
+  GetApiStatusResponses[keyof GetApiStatusResponses];
 
 export type GetApiV1AdminLogsCronData = {
   body?: never;
@@ -42,8 +244,11 @@ export type GetApiV1AdminLogsCronResponses = {
   /**
    * Paginated cron log list
    */
-  200: unknown;
+  200: CronLogList;
 };
+
+export type GetApiV1AdminLogsCronResponse =
+  GetApiV1AdminLogsCronResponses[keyof GetApiV1AdminLogsCronResponses];
 
 export type GetApiV1AdminLogsCronByIdData = {
   body?: never;
@@ -73,8 +278,11 @@ export type GetApiV1AdminLogsCronByIdResponses = {
   /**
    * Cron log detail
    */
-  200: unknown;
+  200: CronLogDetail;
 };
+
+export type GetApiV1AdminLogsCronByIdResponse =
+  GetApiV1AdminLogsCronByIdResponses[keyof GetApiV1AdminLogsCronByIdResponses];
 
 export type GetApiV1AdminLogsSendlogData = {
   body?: never;
@@ -100,8 +308,11 @@ export type GetApiV1AdminLogsSendlogResponses = {
   /**
    * Paginated sendlog list
    */
-  200: unknown;
+  200: SendlogList;
 };
+
+export type GetApiV1AdminLogsSendlogResponse =
+  GetApiV1AdminLogsSendlogResponses[keyof GetApiV1AdminLogsSendlogResponses];
 
 export type GetApiV1AdminLogsSendlogByIdData = {
   body?: never;
@@ -131,8 +342,11 @@ export type GetApiV1AdminLogsSendlogByIdResponses = {
   /**
    * Sendlog detail
    */
-  200: unknown;
+  200: SendlogDetail;
 };
+
+export type GetApiV1AdminLogsSendlogByIdResponse =
+  GetApiV1AdminLogsSendlogByIdResponses[keyof GetApiV1AdminLogsSendlogByIdResponses];
 
 export type GetApiV1AdminSecurityIncidentsData = {
   body?: never;
@@ -162,8 +376,11 @@ export type GetApiV1AdminSecurityIncidentsResponses = {
   /**
    * Incident list
    */
-  200: unknown;
+  200: IncidentList;
 };
+
+export type GetApiV1AdminSecurityIncidentsResponse =
+  GetApiV1AdminSecurityIncidentsResponses[keyof GetApiV1AdminSecurityIncidentsResponses];
 
 export type GetApiV1AdminSecurityIncidentsByIdData = {
   body?: never;
@@ -193,8 +410,11 @@ export type GetApiV1AdminSecurityIncidentsByIdResponses = {
   /**
    * Incident detail
    */
-  200: unknown;
+  200: IncidentDetail;
 };
+
+export type GetApiV1AdminSecurityIncidentsByIdResponse =
+  GetApiV1AdminSecurityIncidentsByIdResponses[keyof GetApiV1AdminSecurityIncidentsByIdResponses];
 
 export type GetApiV1EventsData = {
   body?: never;
@@ -219,8 +439,11 @@ export type GetApiV1EventsResponses = {
   /**
    * Paginated event list
    */
-  200: unknown;
+  200: EventList;
 };
+
+export type GetApiV1EventsResponse =
+  GetApiV1EventsResponses[keyof GetApiV1EventsResponses];
 
 export type GetApiV1EventsByIdData = {
   body?: never;
@@ -237,15 +460,21 @@ export type GetApiV1EventsByIdErrors = {
   /**
    * Event not found or not visible in current context
    */
-  404: unknown;
+  404: ErrorResponse;
 };
+
+export type GetApiV1EventsByIdError =
+  GetApiV1EventsByIdErrors[keyof GetApiV1EventsByIdErrors];
 
 export type GetApiV1EventsByIdResponses = {
   /**
    * Event detail
    */
-  200: unknown;
+  200: EventDetail;
 };
+
+export type GetApiV1EventsByIdResponse =
+  GetApiV1EventsByIdResponses[keyof GetApiV1EventsByIdResponses];
 
 export type PostApiV1EventsByIdCommentsData = {
   body: {
@@ -260,7 +489,7 @@ export type PostApiV1EventsByIdCommentsErrors = {
   /**
    * Empty content
    */
-  400: unknown;
+  400: ErrorResponse;
   /**
    * Missing or invalid Bearer token
    */
@@ -275,12 +504,18 @@ export type PostApiV1EventsByIdCommentsErrors = {
   404: unknown;
 };
 
+export type PostApiV1EventsByIdCommentsError =
+  PostApiV1EventsByIdCommentsErrors[keyof PostApiV1EventsByIdCommentsErrors];
+
 export type PostApiV1EventsByIdCommentsResponses = {
   /**
    * Comment created
    */
-  201: unknown;
+  201: CommentCreated;
 };
+
+export type PostApiV1EventsByIdCommentsResponse =
+  PostApiV1EventsByIdCommentsResponses[keyof PostApiV1EventsByIdCommentsResponses];
 
 export type DeleteApiV1EventsByIdCommentsByCommentIdData = {
   body?: never;
@@ -327,7 +562,7 @@ export type PostApiV1EventsByIdImagesErrors = {
   /**
    * No file or unsupported format
    */
-  400: unknown;
+  400: ErrorResponse;
   /**
    * Missing or invalid Bearer token
    */
@@ -342,12 +577,18 @@ export type PostApiV1EventsByIdImagesErrors = {
   404: unknown;
 };
 
+export type PostApiV1EventsByIdImagesError =
+  PostApiV1EventsByIdImagesErrors[keyof PostApiV1EventsByIdImagesErrors];
+
 export type PostApiV1EventsByIdImagesResponses = {
   /**
    * Image uploaded
    */
-  201: unknown;
+  201: ImageUploaded;
 };
+
+export type PostApiV1EventsByIdImagesResponse =
+  PostApiV1EventsByIdImagesResponses[keyof PostApiV1EventsByIdImagesResponses];
 
 export type DeleteApiV1EventsByIdImagesByImageIdData = {
   body?: never;
@@ -400,19 +641,25 @@ export type DeleteApiV1EventsByIdRsvpErrors = {
   /**
    * Event not found
    */
-  404: unknown;
+  404: ErrorResponse;
   /**
    * Event canceled or already started
    */
-  409: unknown;
+  409: ErrorResponse;
 };
+
+export type DeleteApiV1EventsByIdRsvpError =
+  DeleteApiV1EventsByIdRsvpErrors[keyof DeleteApiV1EventsByIdRsvpErrors];
 
 export type DeleteApiV1EventsByIdRsvpResponses = {
   /**
    * RSVP removed (or already absent)
    */
-  200: unknown;
+  200: RsvpResult;
 };
+
+export type DeleteApiV1EventsByIdRsvpResponse =
+  DeleteApiV1EventsByIdRsvpResponses[keyof DeleteApiV1EventsByIdRsvpResponses];
 
 export type PostApiV1EventsByIdRsvpData = {
   body?: never;
@@ -433,19 +680,25 @@ export type PostApiV1EventsByIdRsvpErrors = {
   /**
    * Event not found
    */
-  404: unknown;
+  404: ErrorResponse;
   /**
    * Event canceled or already started
    */
-  409: unknown;
+  409: ErrorResponse;
 };
+
+export type PostApiV1EventsByIdRsvpError =
+  PostApiV1EventsByIdRsvpErrors[keyof PostApiV1EventsByIdRsvpErrors];
 
 export type PostApiV1EventsByIdRsvpResponses = {
   /**
    * RSVP added (or already present)
    */
-  200: unknown;
+  200: RsvpResult;
 };
+
+export type PostApiV1EventsByIdRsvpResponse =
+  PostApiV1EventsByIdRsvpResponses[keyof PostApiV1EventsByIdRsvpResponses];
 
 export type GetApiV1GroupsData = {
   body?: never;
@@ -458,8 +711,11 @@ export type GetApiV1GroupsResponses = {
   /**
    * Array of group summaries
    */
-  200: unknown;
+  200: GroupList;
 };
+
+export type GetApiV1GroupsResponse =
+  GetApiV1GroupsResponses[keyof GetApiV1GroupsResponses];
 
 export type GetApiV1GroupsByGroupSlugData = {
   body?: never;
@@ -474,15 +730,21 @@ export type GetApiV1GroupsByGroupSlugErrors = {
   /**
    * Group not found
    */
-  404: unknown;
+  404: ErrorResponse;
 };
+
+export type GetApiV1GroupsByGroupSlugError =
+  GetApiV1GroupsByGroupSlugErrors[keyof GetApiV1GroupsByGroupSlugErrors];
 
 export type GetApiV1GroupsByGroupSlugResponses = {
   /**
    * Group detail
    */
-  200: unknown;
+  200: GroupDetail;
 };
+
+export type GetApiV1GroupsByGroupSlugResponse =
+  GetApiV1GroupsByGroupSlugResponses[keyof GetApiV1GroupsByGroupSlugResponses];
 
 export type GetApiV1GroupsByGroupSlugAdminMembersData = {
   body?: never;
@@ -505,15 +767,21 @@ export type GetApiV1GroupsByGroupSlugAdminMembersErrors = {
   /**
    * Group not found
    */
-  404: unknown;
+  404: ErrorResponse;
 };
+
+export type GetApiV1GroupsByGroupSlugAdminMembersError =
+  GetApiV1GroupsByGroupSlugAdminMembersErrors[keyof GetApiV1GroupsByGroupSlugAdminMembersErrors];
 
 export type GetApiV1GroupsByGroupSlugAdminMembersResponses = {
   /**
    * Members list
    */
-  200: unknown;
+  200: GroupMemberList;
 };
+
+export type GetApiV1GroupsByGroupSlugAdminMembersResponse =
+  GetApiV1GroupsByGroupSlugAdminMembersResponses[keyof GetApiV1GroupsByGroupSlugAdminMembersResponses];
 
 export type GetApiV1GroupsByGroupSlugAdminSettingsData = {
   body?: never;
@@ -536,15 +804,21 @@ export type GetApiV1GroupsByGroupSlugAdminSettingsErrors = {
   /**
    * Group not found
    */
-  404: unknown;
+  404: ErrorResponse;
 };
+
+export type GetApiV1GroupsByGroupSlugAdminSettingsError =
+  GetApiV1GroupsByGroupSlugAdminSettingsErrors[keyof GetApiV1GroupsByGroupSlugAdminSettingsErrors];
 
 export type GetApiV1GroupsByGroupSlugAdminSettingsResponses = {
   /**
    * Group settings
    */
-  200: unknown;
+  200: GroupSettings;
 };
+
+export type GetApiV1GroupsByGroupSlugAdminSettingsResponse =
+  GetApiV1GroupsByGroupSlugAdminSettingsResponses[keyof GetApiV1GroupsByGroupSlugAdminSettingsResponses];
 
 export type GetApiV1GroupsByGroupSlugCmsData = {
   body?: never;
@@ -564,15 +838,21 @@ export type GetApiV1GroupsByGroupSlugCmsErrors = {
   /**
    * Group not found
    */
-  404: unknown;
+  404: ErrorResponse;
 };
+
+export type GetApiV1GroupsByGroupSlugCmsError =
+  GetApiV1GroupsByGroupSlugCmsErrors[keyof GetApiV1GroupsByGroupSlugCmsErrors];
 
 export type GetApiV1GroupsByGroupSlugCmsResponses = {
   /**
    * List of CMS pages
    */
-  200: unknown;
+  200: CmsPageList;
 };
+
+export type GetApiV1GroupsByGroupSlugCmsResponse =
+  GetApiV1GroupsByGroupSlugCmsResponses[keyof GetApiV1GroupsByGroupSlugCmsResponses];
 
 export type GetApiV1GroupsByGroupSlugCmsByCmsSlugData = {
   body?: never;
@@ -590,15 +870,21 @@ export type GetApiV1GroupsByGroupSlugCmsByCmsSlugErrors = {
   /**
    * Group not found, or page not found / not visible in this group
    */
-  404: unknown;
+  404: ErrorResponse;
 };
+
+export type GetApiV1GroupsByGroupSlugCmsByCmsSlugError =
+  GetApiV1GroupsByGroupSlugCmsByCmsSlugErrors[keyof GetApiV1GroupsByGroupSlugCmsByCmsSlugErrors];
 
 export type GetApiV1GroupsByGroupSlugCmsByCmsSlugResponses = {
   /**
    * CMS page metadata
    */
-  200: unknown;
+  200: CmsPage;
 };
+
+export type GetApiV1GroupsByGroupSlugCmsByCmsSlugResponse =
+  GetApiV1GroupsByGroupSlugCmsByCmsSlugResponses[keyof GetApiV1GroupsByGroupSlugCmsByCmsSlugResponses];
 
 export type GetApiV1MeData = {
   body?: never;
@@ -618,8 +904,10 @@ export type GetApiV1MeResponses = {
   /**
    * User profile
    */
-  200: unknown;
+  200: MeProfile;
 };
+
+export type GetApiV1MeResponse = GetApiV1MeResponses[keyof GetApiV1MeResponses];
 
 export type GetApiV1MeRsvpsData = {
   body?: never;
@@ -639,5 +927,8 @@ export type GetApiV1MeRsvpsResponses = {
   /**
    * Array of upcoming events the user has RSVPed to
    */
-  200: unknown;
+  200: MeRsvpList;
 };
+
+export type GetApiV1MeRsvpsResponse =
+  GetApiV1MeRsvpsResponses[keyof GetApiV1MeRsvpsResponses];

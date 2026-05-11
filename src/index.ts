@@ -8,39 +8,12 @@ import {
   getApiV1Groups,
   getApiV1GroupsByGroupSlug,
 } from "./api-client/sdk.gen";
-
-interface EventSummary {
-  id: number;
-  title: string;
-  start: string;
-  end?: string;
-  location?: string;
-}
-
-interface EventDetail {
-  id: number;
-  title: string;
-  start: string;
-  end?: string;
-  location?: string;
-  description?: string;
-  url?: string;
-}
-
-interface GroupSummary {
-  id: number;
-  name: string;
-  slug: string;
-  description?: string;
-}
-
-interface GroupDetail {
-  id: number;
-  name: string;
-  slug: string;
-  description?: string;
-  url?: string;
-}
+import type { EventDetail } from "./api-client/types.gen";
+import {
+  getApiV1EventsResponseTransformer,
+  getApiV1EventsByIdResponseTransformer,
+  getApiV1GroupsByGroupSlugResponseTransformer,
+} from "./api-client/transformers.gen";
 
 export interface Env {
   BOT_TOKEN: string;
@@ -48,6 +21,17 @@ export interface Env {
   BOT_INFO: string;
   API_BASE_URL: string;
   AI: Ai;
+}
+
+function formatLocation(loc: EventDetail["location"]): string | undefined {
+  if (!loc) return undefined;
+  return [
+    loc.name,
+    loc.street,
+    [loc.postcode, loc.city].filter(Boolean).join(" "),
+  ]
+    .filter(Boolean)
+    .join(", ");
 }
 
 export default {
@@ -101,7 +85,7 @@ export default {
       const limit = args[0] ? parseInt(args[0], 10) : 10;
       const from = args[1] ?? undefined;
 
-      const { data, error } = (await withCache(
+      const { data, error } = await withCache(
         `events:list:${limit}:${sanitizeCacheKey(from ?? "")}`,
         () =>
           getApiV1Events({
@@ -109,7 +93,8 @@ export default {
           }),
         600,
         execCtx,
-      )) as { data?: { items: EventSummary[] }; error?: unknown };
+        getApiV1EventsResponseTransformer,
+      );
       if (error) {
         return ctx.reply(`Error fetching events: ${errMsg(error)}`);
       }
@@ -120,7 +105,7 @@ export default {
       for (const e of data.items) {
         keyboard
           .text(
-            `${e.title} (${e.start ? new Date(e.start).toLocaleDateString("sv-SE") : ""})`,
+            `${e.title} (${e.start.toLocaleDateString("sv-SE")})`,
             `event:${e.id}`,
           )
           .row();
@@ -131,12 +116,13 @@ export default {
     bot.callbackQuery(/^event:(.+)$/, async (ctx) => {
       const id = parseInt(ctx.match[1], 10);
       await ctx.answerCallbackQuery();
-      const { data, error } = (await withCache(
+      const { data, error } = await withCache(
         `events:${id}`,
         () => getApiV1EventsById({ path: { id } }),
         3600,
         execCtx,
-      )) as { data?: EventDetail; error?: unknown };
+        getApiV1EventsByIdResponseTransformer,
+      );
       if (error) {
         return ctx.reply(`Error fetching event: ${errMsg(error)}`);
       }
@@ -145,11 +131,13 @@ export default {
       }
       const parts = [
         data.title,
-        `Start: ${data.start ?? ""}`,
-        data.end ? `End: ${data.end}` : null,
-        data.location ? `Location: ${data.location}` : null,
+        `Start: ${data.start.toLocaleDateString("sv-SE")}`,
+        data.stop ? `End: ${data.stop.toLocaleDateString("sv-SE")}` : null,
+        formatLocation(data.location)
+          ? `Location: ${formatLocation(data.location)}`
+          : null,
         data.description ? `\n${data.description}` : null,
-        data.url ? `\n${data.url}` : null,
+        data.webUrl ? `\n${data.webUrl}` : null,
       ].filter(Boolean);
       return ctx.reply(parts.join("\n"));
     });
@@ -164,12 +152,13 @@ export default {
         return ctx.reply("Event ID must be a number.");
       }
 
-      const { data, error } = (await withCache(
+      const { data, error } = await withCache(
         `events:${id}`,
         () => getApiV1EventsById({ path: { id } }),
         3600,
         execCtx,
-      )) as { data?: EventDetail; error?: unknown };
+        getApiV1EventsByIdResponseTransformer,
+      );
       if (error) {
         return ctx.reply(`Error fetching event: ${errMsg(error)}`);
       }
@@ -178,22 +167,24 @@ export default {
       }
       const parts = [
         data.title,
-        `Start: ${data.start ?? ""}`,
-        data.end ? `End: ${data.end}` : null,
-        data.location ? `Location: ${data.location}` : null,
+        `Start: ${data.start.toLocaleDateString("sv-SE")}`,
+        data.stop ? `End: ${data.stop.toLocaleDateString("sv-SE")}` : null,
+        formatLocation(data.location)
+          ? `Location: ${formatLocation(data.location)}`
+          : null,
         data.description ? `\n${data.description}` : null,
-        data.url ? `\n${data.url}` : null,
+        data.webUrl ? `\n${data.webUrl}` : null,
       ].filter(Boolean);
       return ctx.reply(parts.join("\n"));
     });
 
     bot.command("groups", async (ctx) => {
-      const { data, error } = (await withCache(
+      const { data, error } = await withCache(
         "groups:list",
         () => getApiV1Groups(),
         3600,
         execCtx,
-      )) as { data?: { items: GroupSummary[] }; error?: unknown };
+      );
       if (error) {
         return ctx.reply(`Error fetching groups: ${errMsg(error)}`);
       }
@@ -202,7 +193,7 @@ export default {
       }
       const keyboard = new InlineKeyboard();
       for (const g of data.items) {
-        keyboard.text(g.name ?? g.slug ?? "", `group:${g.slug}`).row();
+        keyboard.text(g.name, `group:${g.slug}`).row();
       }
       return ctx.reply("Groups:", { reply_markup: keyboard });
     });
@@ -214,12 +205,13 @@ export default {
         return;
       }
       await ctx.answerCallbackQuery();
-      const { data, error } = (await withCache(
+      const { data, error } = await withCache(
         `groups:${sanitizeCacheKey(slug)}`,
         () => getApiV1GroupsByGroupSlug({ path: { groupSlug: slug } }),
         3600,
         execCtx,
-      )) as { data?: GroupDetail; error?: unknown };
+        getApiV1GroupsByGroupSlugResponseTransformer,
+      );
       if (error) {
         return ctx.reply(`Error fetching group: ${errMsg(error)}`);
       }
@@ -229,7 +221,7 @@ export default {
       const parts = [
         data.name,
         data.description ?? null,
-        data.url ? `\n${data.url}` : null,
+        data.detailUrl ? `\n${data.detailUrl}` : null,
       ].filter(Boolean);
       return ctx.reply(parts.join("\n"));
     });
@@ -242,12 +234,13 @@ export default {
       if (!validateSlug(slug)) {
         return ctx.reply("Invalid group slug.");
       }
-      const { data, error } = (await withCache(
+      const { data, error } = await withCache(
         `groups:${sanitizeCacheKey(slug)}`,
         () => getApiV1GroupsByGroupSlug({ path: { groupSlug: slug } }),
         3600,
         execCtx,
-      )) as { data?: GroupDetail; error?: unknown };
+        getApiV1GroupsByGroupSlugResponseTransformer,
+      );
       if (error) {
         return ctx.reply(`Error fetching group: ${errMsg(error)}`);
       }
@@ -257,7 +250,7 @@ export default {
       const parts = [
         data.name,
         data.description ?? null,
-        data.url ? `\n${data.url}` : null,
+        data.detailUrl ? `\n${data.detailUrl}` : null,
       ].filter(Boolean);
       return ctx.reply(parts.join("\n"));
     });
@@ -267,7 +260,7 @@ export default {
       limit: number,
       from: string | undefined,
     ) {
-      const { data, error } = (await withCache(
+      const { data, error } = await withCache(
         `events:list:${limit}:${sanitizeCacheKey(from ?? "")}`,
         () =>
           getApiV1Events({
@@ -275,14 +268,15 @@ export default {
           }),
         600,
         execCtx,
-      )) as { data?: { items: EventSummary[] }; error?: unknown };
+        getApiV1EventsResponseTransformer,
+      );
       if (error) return ctx.reply(`Error fetching events: ${errMsg(error)}`);
       if (!data?.items?.length) return ctx.reply("No upcoming events found.");
       const keyboard = new InlineKeyboard();
       for (const e of data.items) {
         keyboard
           .text(
-            `${e.title} (${e.start ? new Date(e.start).toLocaleDateString("sv-SE") : ""})`,
+            `${e.title} (${e.start.toLocaleDateString("sv-SE")})`,
             `event:${e.id}`,
           )
           .row();
@@ -291,54 +285,58 @@ export default {
     }
 
     async function handleEvent(ctx: Context, id: number) {
-      const { data, error } = (await withCache(
+      const { data, error } = await withCache(
         `events:${id}`,
         () => getApiV1EventsById({ path: { id } }),
         3600,
         execCtx,
-      )) as { data?: EventDetail; error?: unknown };
+        getApiV1EventsByIdResponseTransformer,
+      );
       if (error) return ctx.reply(`Error fetching event: ${errMsg(error)}`);
       if (!data) return ctx.reply("Event not found.");
       const parts = [
         data.title,
-        `Start: ${data.start ?? ""}`,
-        data.end ? `End: ${data.end}` : null,
-        data.location ? `Location: ${data.location}` : null,
+        `Start: ${data.start.toLocaleDateString("sv-SE")}`,
+        data.stop ? `End: ${data.stop.toLocaleDateString("sv-SE")}` : null,
+        formatLocation(data.location)
+          ? `Location: ${formatLocation(data.location)}`
+          : null,
         data.description ? `\n${data.description}` : null,
-        data.url ? `\n${data.url}` : null,
+        data.webUrl ? `\n${data.webUrl}` : null,
       ].filter(Boolean);
       return ctx.reply(parts.join("\n"));
     }
 
     async function handleGroups(ctx: Context) {
-      const { data, error } = (await withCache(
+      const { data, error } = await withCache(
         "groups:list",
         () => getApiV1Groups(),
         3600,
         execCtx,
-      )) as { data?: { items: GroupSummary[] }; error?: unknown };
+      );
       if (error) return ctx.reply(`Error fetching groups: ${errMsg(error)}`);
       if (!data?.items?.length) return ctx.reply("No groups found.");
       const keyboard = new InlineKeyboard();
       for (const g of data.items) {
-        keyboard.text(g.name ?? g.slug ?? "", `group:${g.slug}`).row();
+        keyboard.text(g.name, `group:${g.slug}`).row();
       }
       return ctx.reply("Groups:", { reply_markup: keyboard });
     }
 
     async function handleGroup(ctx: Context, slug: string) {
-      const { data, error } = (await withCache(
+      const { data, error } = await withCache(
         `groups:${sanitizeCacheKey(slug)}`,
         () => getApiV1GroupsByGroupSlug({ path: { groupSlug: slug } }),
         3600,
         execCtx,
-      )) as { data?: GroupDetail; error?: unknown };
+        getApiV1GroupsByGroupSlugResponseTransformer,
+      );
       if (error) return ctx.reply(`Error fetching group: ${errMsg(error)}`);
       if (!data) return ctx.reply("Group not found.");
       const parts = [
         data.name,
         data.description ?? null,
-        data.url ? `\n${data.url}` : null,
+        data.detailUrl ? `\n${data.detailUrl}` : null,
       ].filter(Boolean);
       return ctx.reply(parts.join("\n"));
     }
@@ -348,7 +346,7 @@ export default {
         case "get_events": {
           const limit = (args.limit as number) ?? 20;
           const from = args.from as string | undefined;
-          const { data, error } = (await withCache(
+          const { data, error } = await withCache(
             `events:list:${limit}:${sanitizeCacheKey(from ?? "")}`,
             () =>
               getApiV1Events({
@@ -356,7 +354,8 @@ export default {
               }),
             600,
             execCtx,
-          )) as { data?: { items: EventSummary[] }; error?: unknown };
+            getApiV1EventsResponseTransformer,
+          );
           if (error) return { error: errMsg(error) };
           if (!data?.items?.length) return { items: [] };
           return {
@@ -364,65 +363,63 @@ export default {
               id: e.id,
               title: e.title,
               start: e.start,
-              end: e.end,
-              location: e.location,
+              end: e.stop,
             })),
           };
         }
         case "get_event": {
           const id = args.id as number;
-          const { data, error } = (await withCache(
+          const { data, error } = await withCache(
             `events:${id}`,
             () => getApiV1EventsById({ path: { id } }),
             3600,
             execCtx,
-          )) as { data?: EventDetail; error?: unknown };
+            getApiV1EventsByIdResponseTransformer,
+          );
           if (error) return { error: errMsg(error) };
           if (!data) return { error: "Event not found" };
           return {
             id: data.id,
             title: data.title,
             start: data.start,
-            end: data.end,
-            location: data.location,
+            end: data.stop,
+            location: formatLocation(data.location),
             description: data.description,
-            url: data.url,
+            url: data.webUrl,
           };
         }
         case "get_groups": {
-          const { data, error } = (await withCache(
+          const { data, error } = await withCache(
             "groups:list",
             () => getApiV1Groups(),
             3600,
             execCtx,
-          )) as { data?: { items: GroupSummary[] }; error?: unknown };
+          );
           if (error) return { error: errMsg(error) };
           if (!data?.items?.length) return { items: [] };
           return {
             items: data.items.map((g) => ({
-              id: g.id,
               name: g.name,
               slug: g.slug,
-              description: g.description?.slice(0, 500),
             })),
           };
         }
         case "get_group": {
           const slug = args.slug as string;
-          const { data, error } = (await withCache(
+          const { data, error } = await withCache(
             `groups:${sanitizeCacheKey(slug)}`,
             () => getApiV1GroupsByGroupSlug({ path: { groupSlug: slug } }),
             3600,
             execCtx,
-          )) as { data?: GroupDetail; error?: unknown };
+            getApiV1GroupsByGroupSlugResponseTransformer,
+          );
           if (error) return { error: errMsg(error) };
           if (!data) return { error: "Group not found" };
           return {
-            id: data.id,
             name: data.name,
             slug: data.slug,
             description: data.description,
-            url: data.url,
+            url: data.detailUrl,
           };
         }
         default:
@@ -510,12 +507,14 @@ async function withCache<T>(
   fetcher: () => Promise<{ data?: T; error?: unknown }>,
   ttl: number,
   ctx: ExecutionContext,
+  transform?: (data: T) => T | Promise<T>,
 ): Promise<{ data?: T; error?: unknown }> {
   const cacheUrl = `https://cache.internal/${key}`;
   try {
     const cached = await caches.default.match(cacheUrl);
     if (cached) {
-      return { data: (await cached.json()) as T };
+      const data = (await cached.json()) as T;
+      return { data: transform ? await transform(data) : data };
     }
   } catch {
     // Cache read failed, fall through to live API
