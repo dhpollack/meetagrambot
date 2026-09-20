@@ -1,0 +1,79 @@
+{
+  "items": [
+    {
+      "attendeeCount": 14,
+      "canceled": false,
+      "detailUrl": "https://meetagain.org/api/v1/events/117",
+      "group": {
+        "domain": "travolta-meetup.de",
+        "logoUrl": null,
+        "name": "German English Language Exchange",
+        "slug": "german-english-language-exchange-in-berlin",
+        "visibility": "public"
+      },
+      "id": 117,
+      "myGuests": null,
+      "myRsvp": null,
+      "previewImageUrl": "https://meetagain.org/images/thumbnails/71cbfeca2e1c1417941fecbd19a55f10f5d24a1d_600x400.webp",
+      "rsvpCount": 1,
+      "seriesId": 2,
+      "start": "2026-09-22T19:00:00+02:00",
+      "stop": "2026-09-22T22:30:00+02:00",
+      "teaser": "Join us every Tuesday evening at Travolta Bar in Kreuzberg for a casual and fun German-English language exchange. Mark Twain once wrote that there's nothing you can't learn in Berlin except the German language.",
+      "title": "German English Language Exchange",
+      "type": 2,
+      "webUrl": "https://meetagain.org/en/event/117"
+    },
+    {
+      "attendeeCount": 11,
+      "canceled": false,
+      "detailUrl": "https://meetagain.org/api/v1/events/126",
+      "group": {
+        "domain": "travolta-meetup.de",
+        "logoUrl": null,
+        "name": "German English Language Exchange",
+        "slug": "german-english-language-exchange-in-berlin",
+        "visibility": "public"
+      },
+      "id": 126,
+      "myGuests": null,
+      "myRsvp": null,
+      "previewImageUrl": "https://meetagain.org/images/thumbnails/71cbfeca2e1c1417941fecbd19a55f10f5d24a1d_600x400.webp",
+      "rsvpCount": 1,
+      "seriesId": 2,
+      "start": "2026-09-29T19:00:00+02:00",
+      "stop": "2026-09-29T22:30:00+02:00",
+      "teaser": "Join us every Tuesday evening at Travolta Bar in Kreuzberg for a casual and fun German-English language exchange. Mark Twain once wrote that there's nothing you can't learn in Berlin except the German language.",
+      "title": "German English Language Exchange",
+      "type": 2,
+      "webUrl": "https://meetagain.org/en/event/126"
+    },
+    {
+      "attendeeCount": 16,
+      "canceled": false,
+      "detailUrl": "https://meetagain.org/api/v1/events/91",
+      "group": {
+        "domain": "dragon-descendants.de",
+        "logoUrl": "https://meetagain.org/images/thumbnails/2f8b9dbfb6dce7080f1177545c4e3c4b1b9fe8dd_h120.webp",
+        "name": "Dragon Descendants",
+        "slug": "my-community",
+        "visibility": "public"
+      },
+      "id": 91,
+      "myGuests": null,
+      "myRsvp": null,
+      "previewImageUrl": "https://meetagain.org/images/thumbnails/238cb301f894ab4f58d60d8a990b0a69244b215b_600x400.webp",
+      "rsvpCount": 3,
+      "seriesId": 1,
+      "start": "2026-10-01T19:00:00+02:00",
+      "stop": "2026-10-01T22:30:00+02:00",
+      "teaser": "Join our regular Chinese/German meetup in Berlin for cultural exchange, language practice, and cultural exchange. Our meetup is open for everybody. Our members learn Chinese/German, are beginner or fluent/native, and socialize in whatever language they're comfortable with. We meet every second Thursday, but sometimes have other events on different days/locations. Seek out new friends and make new ones.",
+      "title": "Biweekly Chinese-German Exchange",
+      "type": 2,
+      "webUrl": "https://meetagain.org/en/event/91"
+    }
+  ],
+  "limit": 3,
+  "offset": 0,
+  "total": 28
+}

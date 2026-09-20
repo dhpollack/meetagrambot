@@ -4,29 +4,99 @@ export type ClientOptions = {
   baseUrl: `${string}://${string}` | (string & {});
 };
 
-export type CmsPage = {
-  languages: Array<string>;
-  linkName: string;
-  slug: string;
-  title: string;
-  webUrl: string;
+export type CmsBlockFieldDefinition = {
+  name: string;
+  /**
+   * string, text, boolean, color or imageList
+   */
+  type: string;
+  required: boolean;
+  /**
+   * Value passed through the cms.content sanitizer before storage
+   */
+  richText: boolean;
+  /**
+   * Applied when the field is absent from the payload
+   */
+  default?: boolean | string | Array<unknown> | null;
 };
 
-export type CmsPageList = {
-  items: Array<CmsPage>;
+export type CmsBlockList = {
+  pageId: number;
+  locale: string;
+  items: Array<CmsBlockSummary>;
   total: number;
 };
 
-export type CommentCreated = {
-  content: string;
-  createdAt?: Date | null;
+export type CmsBlockSummary = {
   id: number;
+  pageId: number;
+  locale: string;
+  /**
+   * Block type name, as accepted by the write endpoints
+   */
+  type: string;
+  /**
+   * Numeric block type, as stored
+   */
+  typeId: number;
+  priority: number;
+  imageId?: number | null;
+  /**
+   * Stored block payload, after hydration and sanitization
+   */
+  payload: {
+    [key: string]: unknown;
+  };
 };
 
-export type CronLogDetail = CronLogSummary & {
+export type CmsBlockTypeCatalog = {
+  items: Array<CmsBlockTypeDefinition>;
+  total: number;
+};
+
+export type CmsBlockTypeDefinition = {
+  id: number;
+  name: string;
+  /**
+   * False for types the core does not hydrate yet; writing one returns 422
+   */
+  implemented: boolean;
+  /**
+   * None, Optional or Required
+   */
+  imageSupport?: string | null;
+  supportsImageRight?: boolean | null;
+  isGallery?: boolean | null;
+  fields: Array<CmsBlockFieldDefinition>;
+};
+
+export type CmsPageSummary = {
+  id: number;
+  slug: string | null;
+  published: boolean;
+  locked: boolean;
+  groupSlug?: string | null;
+  groupName?: string | null;
+  languages: Array<string>;
+  blockCounts: {
+    [key: string]: number;
+  };
+};
+
+export type CmsPageSummaryList = {
+  items: Array<CmsPageSummary>;
+  total: number;
+};
+
+export type CronLogDetail = {
+  id: number;
+  runAt: Date;
+  status: string;
+  durationMs?: number | null;
   tasks?: Array<{
     [key: string]: unknown;
-  }>;
+  }> | null;
 };
 
 export type CronLogList = {
@@ -35,69 +105,21 @@ export type CronLogList = {
 };
 
 export type CronLogSummary = {
-  durationMs?: number | null;
   id: number;
   runAt: Date;
   status: string;
-};
-
-export type ErrorResponse = {
-  error: string;
-};
-
-export type EventDetail = EventSummary & {
-  description?: string | null;
-  images?: Array<string>;
-  location?: {
-    city?: string | null;
-    name?: string | null;
-    postcode?: string | null;
-    street?: string | null;
-  } | null;
-};
-
-export type EventList = {
-  items: Array<EventSummary>;
-  limit: number;
-  offset: number;
-  total: number;
-};
-
-export type EventSummary = {
-  detailUrl: string;
-  id: number;
-  previewImageUrl?: string | null;
-  rsvpCount: number;
-  start: Date;
-  stop?: Date | null;
-  teaser?: string | null;
-  title: string;
-  type?: string | null;
-  webUrl: string;
-};
-
-export type GroupDetail = GroupSummary & {
-  createdAt?: Date | null;
-  description?: string | null;
-  languages?: Array<string>;
-  memberCount?: number;
-  previewImageUrl?: string | null;
-};
-
-export type GroupList = {
-  items: Array<GroupSummary>;
-  total: number;
+  durationMs?: number | null;
 };
 
 export type GroupMember = {
-  blocked?: boolean;
-  email?: string | null;
   id: number;
-  joinedAt?: Date | null;
+  userId?: number | null;
   name?: string | null;
+  email?: string | null;
   role?: string | null;
   status: string;
-  userId?: number | null;
+  joinedAt?: Date | null;
+  blocked?: boolean;
 };
 
 export type GroupMemberList = {
@@ -106,27 +128,385 @@ export type GroupMemberList = {
 };
 
 export type GroupSettings = {
-  createdAt?: Date | null;
+  id: number;
+  slug: string;
+  name: string;
   description?: string | null;
+  tags?: Array<string> | null;
+  visibility?: string | null;
+  createdAt?: Date | null;
+  updatedAt?: Date | null;
+};
+
+export type IncidentDetail = {
+  id: number;
+  ip?: string | null;
+  severity: string;
+  triggeredBy?: string | null;
+  startedAt: Date;
+  endedAt: Date;
+  blockedUntil?: string | null;
+  countryCode?: string | null;
+  sessionId?: string | null;
+  userAgent?: string | null;
+  providerReports?: {
+    [key: string]: unknown;
+  } | null;
+};
+
+export type IncidentList = {
+  items: Array<IncidentSummary>;
+  total: number;
+  limit: number;
+};
+
+export type IncidentSummary = {
+  id: number;
+  ip?: string | null;
+  severity: string;
+  triggeredBy?: string | null;
+  startedAt: Date;
+  endedAt: Date;
+  blockedUntil?: string | null;
+  countryCode?: string | null;
+};
+
+export type MissingAltImageItem = {
+  id: number;
+  hash: string;
+  type: string;
+  requiredLocales: Array<string>;
+  missingLocales: Array<string>;
+  current: {
+    [key: string]: string;
+  };
+  contentUrl: string;
+};
+
+export type MissingAltImageList = {
+  sourceLocale: string;
+  items: Array<MissingAltImageItem>;
+  /**
+   * Keyset cursor for the next page; null when the scan reached the end
+   */
+  nextAfterId: number | null;
+};
+
+export type SendlogDetail = {
+  id: number;
+  createdAt?: Date | null;
+  recipient: string;
+  subject: string;
+  status: string;
+  template?: string | null;
+  sender?: string | null;
+  lang?: string | null;
+  providerDispatchedAt?: Date | null;
+  errorMessage?: string | null;
+};
+
+export type SendlogList = {
+  items: Array<SendlogSummary>;
+  total: number;
+  limit: number;
+};
+
+export type SendlogSummary = {
+  id: number;
+  createdAt?: Date | null;
+  recipient: string;
+  subject: string;
+  status: string;
+  template?: string | null;
+};
+
+export type SeoAction = {
+  id: number;
+  kind: string;
+  title: string;
+  detail?: string | null;
+  gitSha?: string | null;
+  occurredAt: string;
+  source: "admin" | "api";
+  issueId?: number | null;
+  author?: string | null;
+};
+
+export type SeoActionList = {
+  items: Array<SeoAction>;
+  total: number;
+};
+
+export type SeoIssue = {
+  id: number;
+  vendor?: string;
+  kind: string;
+  severity: string;
+  fingerprint: string;
+  subject?: string | null;
+  detail?: string | null;
+  firstSeen?: string;
+  lastSeen?: string;
+  resolvedAt?: string | null;
+};
+
+export type SeoIssueList = {
+  items: Array<SeoIssue>;
+  total: number;
+};
+
+export type SeoStatus = {
+  property: string;
+  health: "unknown" | "ok" | "warning" | "critical";
+  lastPullAt?: string | null;
+  googleOk?: boolean | null;
+  bingOk?: boolean | null;
+  googleNote?: string | null;
+  bingNote?: string | null;
+  openIssues: number;
+  criticalIssues?: number;
+  metrics?: {
+    [key: string]: number;
+  };
+  deltas?: {
+    [key: string]: number;
+  };
+};
+
+export type Attendee = {
   id: number;
   name: string;
+  avatarUrl?: string | null;
+  /**
+   * Guests this person brings along.
+   */
+  guests: number;
+  /**
+   * Whether this is the calling member.
+   */
+  mine: boolean;
+};
+
+export type AttendeeList = {
+  items: Array<Attendee>;
+  /**
+   * Attendees the organizer counts without an account.
+   */
+  externalCount: number;
+  /**
+   * Everyone expected: the people listed, their guests and the external count.
+   */
+  total: number;
+};
+
+export type CmsPage = {
   slug: string;
-  tags?: Array<string>;
-  updatedAt?: Date | null;
+  title: string;
+  linkName: string;
+  languages: Array<string>;
+  webUrl: string;
+};
+
+export type CmsPageList = {
+  items: Array<CmsPage>;
+  total: number;
+};
+
+export type CommentAuthor = {
+  /**
+   * Null once the account is gone.
+   */
+  id: number | null;
+  name: string;
+  avatarUrl?: string | null;
+};
+
+export type CommentCreated = {
+  id: number;
+  content: string;
+  createdAt?: Date | null;
+};
+
+export type CommentList = {
+  items: Array<EventComment>;
+  /**
+   * All comments on the event, not just this page.
+   */
+  total: number;
+  /**
+   * Pass as before to fetch the next, older page; null on the last page.
+   */
+  nextBefore?: number | null;
+};
+
+export type ErrorResponse = {
+  error: string;
+};
+
+export type EventComment = {
+  id: number;
+  author: CommentAuthor;
+  createdAt?: Date | null;
+  content: string;
+  /**
+   * Whether the calling member wrote it.
+   */
+  mine: boolean;
+  /**
+   * Whether the calling member may delete it.
+   */
+  canDelete: boolean;
+};
+
+export type EventDetail = {
+  id: number;
+  title: string;
+  /**
+   * Plain text summary shown in listings.
+   */
+  teaser?: string | null;
+  start: Date;
+  stop?: Date | null;
+  type?: number | null;
+  rsvpCount: number;
+  /**
+   * RSVPs plus their guests plus the organizer-maintained external count.
+   */
+  attendeeCount: number;
+  canceled: boolean;
+  /**
+   * Set when the event belongs to a recurring series.
+   */
+  seriesId?: number | null;
+  group?: EventGroup;
+  /**
+   * Whether the calling member has RSVPed; null without a member-scoped token.
+   */
+  myRsvp?: boolean | null;
+  /**
+   * Guests the calling member brings; null without a member-scoped token.
+   */
+  myGuests?: number | null;
+  previewImageUrl?: string | null;
+  detailUrl: string;
+  webUrl: string;
+  /**
+   * Plain text. Formatting authored in the rich editor is flattened to newlines.
+   */
+  description?: string | null;
+  location?: EventLocation | null;
+  images: Array<string>;
+};
+
+export type EventGroup = {
+  slug: string;
+  name: string;
+  visibility: "public" | "hidden" | "private";
+  domain?: string | null;
+  logoUrl?: string | null;
+};
+
+export type EventImage = {
+  id: number;
+  /**
+   * The largest generated size, for a full-screen view.
+   */
+  url: string;
+  /**
+   * Every generated size, keyed by its dimensions.
+   */
+  urls: {
+    [key: string]: string;
+  };
+  /**
+   * Whether the calling member uploaded it.
+   */
+  mine: boolean;
+};
+
+export type EventList = {
+  items: Array<EventSummary>;
+  total: number;
+  limit: number;
+  offset: number;
+};
+
+export type EventLocation = {
+  name?: string | null;
+  street?: string | null;
+  city?: string | null;
+  postcode?: string | null;
+};
+
+export type EventSummary = {
+  id: number;
+  title: string;
+  /**
+   * Plain text summary shown in listings.
+   */
+  teaser?: string | null;
+  start: Date;
+  stop?: Date | null;
+  type?: number | null;
+  rsvpCount: number;
+  /**
+   * RSVPs plus their guests plus the organizer-maintained external count.
+   */
+  attendeeCount: number;
+  canceled: boolean;
+  /**
+   * Set when the event belongs to a recurring series.
+   */
+  seriesId?: number | null;
+  group?: EventGroup;
+  /**
+   * Whether the calling member has RSVPed; null without a member-scoped token.
+   */
+  myRsvp?: boolean | null;
+  /**
+   * Guests the calling member brings; null without a member-scoped token.
+   */
+  myGuests?: number | null;
+  previewImageUrl?: string | null;
+  detailUrl: string;
+  webUrl: string;
+};
+
+export type GroupDetail = {
+  slug: string;
+  name: string;
   visibility?: string | null;
+  domain?: string | null;
+  logoUrl?: string | null;
+  detailUrl: string;
+  description?: string | null;
+  previewImageUrl?: string | null;
+  languages: Array<string>;
+  createdAt?: Date | null;
+  memberCount: number;
+};
+
+export type GroupList = {
+  items: Array<GroupSummary>;
+  total: number;
 };
 
 export type GroupSummary = {
-  detailUrl: string;
+  slug: string;
+  name: string;
+  visibility?: string | null;
   domain?: string | null;
   logoUrl?: string | null;
-  name: string;
-  slug: string;
-  visibility?: string | null;
+  detailUrl: string;
 };
 
 export type HealthStatus = {
   status: string;
+};
+
+export type ImageList = {
+  items: Array<EventImage>;
+  total: number;
 };
 
 export type ImageUploaded = {
@@ -134,41 +514,45 @@ export type ImageUploaded = {
   url: string;
 };
 
-export type IncidentDetail = IncidentSummary & {
-  providerReports?: {
-    [key: string]: unknown;
-  } | null;
-  sessionId?: string | null;
-  userAgent?: string | null;
+export type Invitation = {
+  id: number;
+  group: GroupSummary;
+  /**
+   * The role the invitation grants on acceptance.
+   */
+  role: string | null;
+  /**
+   * Who sent it; null once that account is gone.
+   */
+  invitedBy?: string | null;
+  createdAt?: Date | null;
+  expiresAt?: Date | null;
 };
 
-export type IncidentList = {
-  items: Array<IncidentSummary>;
-  limit: number;
+export type InvitationList = {
+  items: Array<Invitation>;
   total: number;
 };
 
-export type IncidentSummary = {
-  blockedUntil?: string | null;
-  countryCode?: string | null;
-  endedAt: Date;
-  id: number;
-  ip?: string | null;
-  severity: string;
-  startedAt: Date;
-  triggeredBy?: string | null;
+export type LoginResult = {
+  token: string;
+  scopes: Array<string>;
 };
 
 export type MeProfile = {
-  avatarUrl?: string | null;
-  bio?: string | null;
-  createdAt?: Date | null;
-  email: string;
   id: number;
-  locale: string;
+  email: string;
   name: string;
   role: string;
-  status: string;
+  status: number;
+  locale: string;
+  bio?: string | null;
+  /**
+   * Whether the member profile is visible to other members.
+   */
+  public: boolean;
+  avatarUrl?: string | null;
+  createdAt?: Date | null;
 };
 
 export type MeRsvpList = {
@@ -176,31 +560,44 @@ export type MeRsvpList = {
   total: number;
 };
 
-export type RsvpResult = {
-  rsvp: boolean;
-  rsvpCount: number;
+export type Membership = {
+  group: GroupSummary;
+  /**
+   * owner, organizer or member.
+   */
+  role: string | null;
+  /**
+   * pending while the group still has to approve the request.
+   */
+  status: string;
+  /**
+   * Whether the group has blocked this member.
+   */
+  blocked: boolean;
+  joinedAt?: Date | null;
 };
 
-export type SendlogDetail = SendlogSummary & {
-  errorMessage?: string | null;
-  lang?: string | null;
-  providerDispatchedAt?: Date | null;
-  sender?: string | null;
-};
-
-export type SendlogList = {
-  items: Array<SendlogSummary>;
-  limit: number;
+export type MembershipList = {
+  items: Array<Membership>;
   total: number;
 };
 
-export type SendlogSummary = {
-  createdAt?: Date | null;
-  id: number;
-  recipient: string;
-  status: string;
-  subject: string;
-  template?: string | null;
+export type RsvpResult = {
+  rsvp: boolean;
+  rsvpCount: number;
+  /**
+   * Guests the calling member brings.
+   */
+  guests: number;
+  /**
+   * RSVPs plus their guests plus the external count.
+   */
+  attendeeCount: number;
+};
+
+export type ValidationErrorResponse = {
+  error: string;
+  errors: Array<string>;
 };
 
 export type GetApiStatusData = {
@@ -220,135 +617,408 @@ export type GetApiStatusResponses = {
 export type GetApiStatusResponse =
   GetApiStatusResponses[keyof GetApiStatusResponses];
 
-export type GetApiV1AdminLogsCronData = {
+export type GetApiV1CmsPagesData = {
   body?: never;
   path?: never;
-  query?: {
-    limit?: number;
-  };
-  url: "/api/v1/admin/logs/cron";
+  query?: never;
+  url: "/api/v1/cms/pages";
 };
 
-export type GetApiV1AdminLogsCronErrors = {
+export type GetApiV1CmsPagesErrors = {
   /**
    * Missing or invalid bearer token
    */
   401: unknown;
   /**
-   * Insufficient role
+   * Insufficient role or scope
    */
   403: unknown;
 };
 
-export type GetApiV1AdminLogsCronResponses = {
+export type GetApiV1CmsPagesResponses = {
   /**
-   * Paginated cron log list
+   * All CMS pages, newest first
    */
-  200: CronLogList;
+  200: CmsPageSummaryList;
 };
 
-export type GetApiV1AdminLogsCronResponse =
-  GetApiV1AdminLogsCronResponses[keyof GetApiV1AdminLogsCronResponses];
+export type GetApiV1CmsPagesResponse =
+  GetApiV1CmsPagesResponses[keyof GetApiV1CmsPagesResponses];
 
-export type GetApiV1AdminLogsCronByIdData = {
+export type GetApiV1CmsBlockTypesData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/v1/cms/block-types";
+};
+
+export type GetApiV1CmsBlockTypesErrors = {
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role or scope
+   */
+  403: unknown;
+};
+
+export type GetApiV1CmsBlockTypesResponses = {
+  /**
+   * Field definitions the write endpoints validate against
+   */
+  200: CmsBlockTypeCatalog;
+};
+
+export type GetApiV1CmsBlockTypesResponse =
+  GetApiV1CmsBlockTypesResponses[keyof GetApiV1CmsBlockTypesResponses];
+
+export type GetApiV1CmsPagesByIdBlocksData = {
+  body?: never;
+  path: {
+    id: number;
+  };
+  query?: {
+    /**
+     * Two-letter language code; defaults to the configured default locale
+     */
+    locale?: string;
+  };
+  url: "/api/v1/cms/pages/{id}/blocks";
+};
+
+export type GetApiV1CmsPagesByIdBlocksErrors = {
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role or scope
+   */
+  403: unknown;
+  /**
+   * Page not found
+   */
+  404: unknown;
+  /**
+   * Unknown locale
+   */
+  422: unknown;
+};
+
+export type GetApiV1CmsPagesByIdBlocksResponses = {
+  /**
+   * Blocks in priority order
+   */
+  200: CmsBlockList;
+};
+
+export type GetApiV1CmsPagesByIdBlocksResponse =
+  GetApiV1CmsPagesByIdBlocksResponses[keyof GetApiV1CmsPagesByIdBlocksResponses];
+
+export type PostApiV1CmsPagesByIdBlocksData = {
+  body: {
+    locale: string;
+    /**
+     * Block type name or numeric id from the block-types catalogue
+     */
+    type: unknown;
+    payload: {
+      [key: string]: unknown;
+    };
+  };
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: "/api/v1/cms/pages/{id}/blocks";
+};
+
+export type PostApiV1CmsPagesByIdBlocksErrors = {
+  /**
+   * Malformed body
+   */
+  400: unknown;
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role or scope
+   */
+  403: unknown;
+  /**
+   * Page not found
+   */
+  404: unknown;
+  /**
+   * Unknown locale, unusable block type, or a missing required field
+   */
+  422: ValidationErrorResponse;
+};
+
+export type PostApiV1CmsPagesByIdBlocksError =
+  PostApiV1CmsPagesByIdBlocksErrors[keyof PostApiV1CmsPagesByIdBlocksErrors];
+
+export type PostApiV1CmsPagesByIdBlocksResponses = {
+  /**
+   * The stored block, after hydration and sanitization
+   */
+  201: CmsBlockSummary;
+};
+
+export type PostApiV1CmsPagesByIdBlocksResponse =
+  PostApiV1CmsPagesByIdBlocksResponses[keyof PostApiV1CmsPagesByIdBlocksResponses];
+
+export type DeleteApiV1CmsBlocksByBlockIdData = {
+  body?: never;
+  path: {
+    blockId: number;
+  };
+  query?: never;
+  url: "/api/v1/cms/blocks/{blockId}";
+};
+
+export type DeleteApiV1CmsBlocksByBlockIdErrors = {
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role or scope
+   */
+  403: unknown;
+  /**
+   * Block not found
+   */
+  404: unknown;
+};
+
+export type DeleteApiV1CmsBlocksByBlockIdResponses = {
+  /**
+   * Block deleted
+   */
+  204: void;
+};
+
+export type DeleteApiV1CmsBlocksByBlockIdResponse =
+  DeleteApiV1CmsBlocksByBlockIdResponses[keyof DeleteApiV1CmsBlocksByBlockIdResponses];
+
+export type PatchApiV1CmsBlocksByBlockIdData = {
+  body: {
+    /**
+     * Block type name or numeric id; defaults to the stored type
+     */
+    type?: unknown;
+    payload: {
+      [key: string]: unknown;
+    };
+  };
+  path: {
+    blockId: number;
+  };
+  query?: never;
+  url: "/api/v1/cms/blocks/{blockId}";
+};
+
+export type PatchApiV1CmsBlocksByBlockIdErrors = {
+  /**
+   * Malformed body
+   */
+  400: unknown;
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role or scope
+   */
+  403: unknown;
+  /**
+   * Block not found
+   */
+  404: unknown;
+  /**
+   * Unusable block type or a missing required field
+   */
+  422: ValidationErrorResponse;
+};
+
+export type PatchApiV1CmsBlocksByBlockIdError =
+  PatchApiV1CmsBlocksByBlockIdErrors[keyof PatchApiV1CmsBlocksByBlockIdErrors];
+
+export type PatchApiV1CmsBlocksByBlockIdResponses = {
+  /**
+   * The stored block, after hydration and sanitization
+   */
+  200: CmsBlockSummary;
+};
+
+export type PatchApiV1CmsBlocksByBlockIdResponse =
+  PatchApiV1CmsBlocksByBlockIdResponses[keyof PatchApiV1CmsBlocksByBlockIdResponses];
+
+export type PostApiV1CmsBlocksByBlockIdMoveData = {
+  body: {
+    direction: "up" | "down";
+  };
+  path: {
+    blockId: number;
+  };
+  query?: never;
+  url: "/api/v1/cms/blocks/{blockId}/move";
+};
+
+export type PostApiV1CmsBlocksByBlockIdMoveErrors = {
+  /**
+   * Malformed body
+   */
+  400: unknown;
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role or scope
+   */
+  403: unknown;
+  /**
+   * Block not found
+   */
+  404: unknown;
+  /**
+   * Direction other than up or down
+   */
+  422: unknown;
+};
+
+export type PostApiV1CmsBlocksByBlockIdMoveResponses = {
+  /**
+   * The page blocks in their new order
+   */
+  200: CmsBlockList;
+};
+
+export type PostApiV1CmsBlocksByBlockIdMoveResponse =
+  PostApiV1CmsBlocksByBlockIdMoveResponses[keyof PostApiV1CmsBlocksByBlockIdMoveResponses];
+
+export type GetApiV1ImagesMissingAltData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Keyset cursor: only scan images with a larger ID
+     */
+    after_id?: number;
+    /**
+     * Candidates scanned per page (matching items may be fewer)
+     */
+    limit?: number;
+  };
+  url: "/api/v1/images/missing-alt";
+};
+
+export type GetApiV1ImagesMissingAltErrors = {
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role or scope
+   */
+  403: unknown;
+};
+
+export type GetApiV1ImagesMissingAltResponses = {
+  /**
+   * Page of images still missing alt text in at least one required locale
+   */
+  200: MissingAltImageList;
+};
+
+export type GetApiV1ImagesMissingAltResponse =
+  GetApiV1ImagesMissingAltResponses[keyof GetApiV1ImagesMissingAltResponses];
+
+export type GetApiV1ImagesByIdContentData = {
   body?: never;
   path: {
     id: number;
   };
   query?: never;
-  url: "/api/v1/admin/logs/cron/{id}";
+  url: "/api/v1/images/{id}/content";
 };
 
-export type GetApiV1AdminLogsCronByIdErrors = {
+export type GetApiV1ImagesByIdContentErrors = {
   /**
    * Missing or invalid bearer token
    */
   401: unknown;
   /**
-   * Insufficient role
+   * Insufficient role or scope
    */
   403: unknown;
   /**
-   * Cron log not found
+   * Image or its original file not found
    */
   404: unknown;
 };
 
-export type GetApiV1AdminLogsCronByIdResponses = {
+export type GetApiV1ImagesByIdContentResponses = {
   /**
-   * Cron log detail
+   * Preview bytes (usually image/webp; the original media type when conversion fails)
    */
-  200: CronLogDetail;
+  200: unknown;
 };
 
-export type GetApiV1AdminLogsCronByIdResponse =
-  GetApiV1AdminLogsCronByIdResponses[keyof GetApiV1AdminLogsCronByIdResponses];
-
-export type GetApiV1AdminLogsSendlogData = {
-  body?: never;
-  path?: never;
-  query?: {
-    limit?: number;
+export type PutApiV1ImagesByIdAltData = {
+  body: {
+    /**
+     * Locale => alt text; empty string unsets
+     */
+    alt: {
+      [key: string]: string;
+    };
   };
-  url: "/api/v1/admin/logs/sendlog";
-};
-
-export type GetApiV1AdminLogsSendlogErrors = {
-  /**
-   * Missing or invalid bearer token
-   */
-  401: unknown;
-  /**
-   * Insufficient role
-   */
-  403: unknown;
-};
-
-export type GetApiV1AdminLogsSendlogResponses = {
-  /**
-   * Paginated sendlog list
-   */
-  200: SendlogList;
-};
-
-export type GetApiV1AdminLogsSendlogResponse =
-  GetApiV1AdminLogsSendlogResponses[keyof GetApiV1AdminLogsSendlogResponses];
-
-export type GetApiV1AdminLogsSendlogByIdData = {
-  body?: never;
   path: {
     id: number;
   };
   query?: never;
-  url: "/api/v1/admin/logs/sendlog/{id}";
+  url: "/api/v1/images/{id}/alt";
 };
 
-export type GetApiV1AdminLogsSendlogByIdErrors = {
+export type PutApiV1ImagesByIdAltErrors = {
+  /**
+   * Malformed body
+   */
+  400: unknown;
   /**
    * Missing or invalid bearer token
    */
   401: unknown;
   /**
-   * Insufficient role
+   * Insufficient role or scope
    */
   403: unknown;
   /**
-   * Sendlog entry not found
+   * Image not found
    */
   404: unknown;
-};
-
-export type GetApiV1AdminLogsSendlogByIdResponses = {
   /**
-   * Sendlog detail
+   * A locale outside the image's required set
    */
-  200: SendlogDetail;
+  422: unknown;
 };
 
-export type GetApiV1AdminLogsSendlogByIdResponse =
-  GetApiV1AdminLogsSendlogByIdResponses[keyof GetApiV1AdminLogsSendlogByIdResponses];
+export type PutApiV1ImagesByIdAltResponses = {
+  /**
+   * Refreshed item with recomputed required/missing locales
+   */
+  200: MissingAltImageItem;
+};
 
-export type GetApiV1AdminSecurityIncidentsData = {
+export type PutApiV1ImagesByIdAltResponse =
+  PutApiV1ImagesByIdAltResponses[keyof PutApiV1ImagesByIdAltResponses];
+
+export type GetApiV1SecurityIncidentsData = {
   body?: never;
   path?: never;
   query?: {
@@ -358,10 +1028,10 @@ export type GetApiV1AdminSecurityIncidentsData = {
      */
     since?: Date;
   };
-  url: "/api/v1/admin/security/incidents";
+  url: "/api/v1/security/incidents";
 };
 
-export type GetApiV1AdminSecurityIncidentsErrors = {
+export type GetApiV1SecurityIncidentsErrors = {
   /**
    * Missing or invalid bearer token
    */
@@ -372,26 +1042,26 @@ export type GetApiV1AdminSecurityIncidentsErrors = {
   403: unknown;
 };
 
-export type GetApiV1AdminSecurityIncidentsResponses = {
+export type GetApiV1SecurityIncidentsResponses = {
   /**
    * Incident list
    */
   200: IncidentList;
 };
 
-export type GetApiV1AdminSecurityIncidentsResponse =
-  GetApiV1AdminSecurityIncidentsResponses[keyof GetApiV1AdminSecurityIncidentsResponses];
+export type GetApiV1SecurityIncidentsResponse =
+  GetApiV1SecurityIncidentsResponses[keyof GetApiV1SecurityIncidentsResponses];
 
-export type GetApiV1AdminSecurityIncidentsByIdData = {
+export type GetApiV1SecurityIncidentsByIdData = {
   body?: never;
   path: {
     id: number;
   };
   query?: never;
-  url: "/api/v1/admin/security/incidents/{id}";
+  url: "/api/v1/security/incidents/{id}";
 };
 
-export type GetApiV1AdminSecurityIncidentsByIdErrors = {
+export type GetApiV1SecurityIncidentsByIdErrors = {
   /**
    * Missing or invalid bearer token
    */
@@ -406,15 +1076,872 @@ export type GetApiV1AdminSecurityIncidentsByIdErrors = {
   404: unknown;
 };
 
-export type GetApiV1AdminSecurityIncidentsByIdResponses = {
+export type GetApiV1SecurityIncidentsByIdResponses = {
   /**
    * Incident detail
    */
   200: IncidentDetail;
 };
 
-export type GetApiV1AdminSecurityIncidentsByIdResponse =
-  GetApiV1AdminSecurityIncidentsByIdResponses[keyof GetApiV1AdminSecurityIncidentsByIdResponses];
+export type GetApiV1SecurityIncidentsByIdResponse =
+  GetApiV1SecurityIncidentsByIdResponses[keyof GetApiV1SecurityIncidentsByIdResponses];
+
+export type GetApiV1SeoStatusData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Property id; defaults to the first enabled one
+     */
+    property?: number;
+  };
+  url: "/api/v1/seo/status";
+};
+
+export type GetApiV1SeoStatusErrors = {
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role or scope
+   */
+  403: unknown;
+  /**
+   * No monitored property
+   */
+  404: unknown;
+};
+
+export type GetApiV1SeoStatusResponses = {
+  /**
+   * Compact current state
+   */
+  200: SeoStatus;
+};
+
+export type GetApiV1SeoStatusResponse =
+  GetApiV1SeoStatusResponses[keyof GetApiV1SeoStatusResponses];
+
+export type GetApiV1SeoIssuesData = {
+  body?: never;
+  path?: never;
+  query?: {
+    property?: number;
+    filter?: "open" | "resolved" | "all";
+  };
+  url: "/api/v1/seo/issues";
+};
+
+export type GetApiV1SeoIssuesErrors = {
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role or scope
+   */
+  403: unknown;
+  /**
+   * No monitored property
+   */
+  404: unknown;
+};
+
+export type GetApiV1SeoIssuesResponses = {
+  /**
+   * Issue list
+   */
+  200: SeoIssueList;
+};
+
+export type GetApiV1SeoIssuesResponse =
+  GetApiV1SeoIssuesResponses[keyof GetApiV1SeoIssuesResponses];
+
+export type GetApiV1SeoActionsData = {
+  body?: never;
+  path?: never;
+  query?: {
+    limit?: number;
+  };
+  url: "/api/v1/seo/actions";
+};
+
+export type GetApiV1SeoActionsErrors = {
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role or scope
+   */
+  403: unknown;
+};
+
+export type GetApiV1SeoActionsResponses = {
+  /**
+   * Action list
+   */
+  200: SeoActionList;
+};
+
+export type GetApiV1SeoActionsResponse =
+  GetApiV1SeoActionsResponses[keyof GetApiV1SeoActionsResponses];
+
+export type PostApiV1SeoActionsData = {
+  body: {
+    kind:
+      | "deploy"
+      | "content"
+      | "canonical"
+      | "sitemap"
+      | "structured_data"
+      | "config"
+      | "other";
+    title: string;
+    detail?: string | null;
+    git_sha?: string | null;
+    issue_id?: number | null;
+    occurred_at?: Date | null;
+  };
+  path?: never;
+  query?: never;
+  url: "/api/v1/seo/actions";
+};
+
+export type PostApiV1SeoActionsErrors = {
+  /**
+   * Malformed body
+   */
+  400: unknown;
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role or scope
+   */
+  403: unknown;
+  /**
+   * Unknown action kind or unparseable timestamp
+   */
+  422: unknown;
+};
+
+export type PostApiV1SeoActionsResponses = {
+  /**
+   * The stored action
+   */
+  201: SeoAction;
+};
+
+export type PostApiV1SeoActionsResponse =
+  PostApiV1SeoActionsResponses[keyof PostApiV1SeoActionsResponses];
+
+export type GetApiV1LogsCronData = {
+  body?: never;
+  path?: never;
+  query?: {
+    limit?: number;
+  };
+  url: "/api/v1/logs/cron";
+};
+
+export type GetApiV1LogsCronErrors = {
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role
+   */
+  403: unknown;
+};
+
+export type GetApiV1LogsCronResponses = {
+  /**
+   * Paginated cron log list
+   */
+  200: CronLogList;
+};
+
+export type GetApiV1LogsCronResponse =
+  GetApiV1LogsCronResponses[keyof GetApiV1LogsCronResponses];
+
+export type GetApiV1LogsCronByIdData = {
+  body?: never;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: "/api/v1/logs/cron/{id}";
+};
+
+export type GetApiV1LogsCronByIdErrors = {
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role
+   */
+  403: unknown;
+  /**
+   * Cron log not found
+   */
+  404: unknown;
+};
+
+export type GetApiV1LogsCronByIdResponses = {
+  /**
+   * Cron log detail
+   */
+  200: CronLogDetail;
+};
+
+export type GetApiV1LogsCronByIdResponse =
+  GetApiV1LogsCronByIdResponses[keyof GetApiV1LogsCronByIdResponses];
+
+export type GetApiV1LogsSendlogData = {
+  body?: never;
+  path?: never;
+  query?: {
+    limit?: number;
+  };
+  url: "/api/v1/logs/sendlog";
+};
+
+export type GetApiV1LogsSendlogErrors = {
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role
+   */
+  403: unknown;
+};
+
+export type GetApiV1LogsSendlogResponses = {
+  /**
+   * Paginated sendlog list
+   */
+  200: SendlogList;
+};
+
+export type GetApiV1LogsSendlogResponse =
+  GetApiV1LogsSendlogResponses[keyof GetApiV1LogsSendlogResponses];
+
+export type GetApiV1LogsSendlogByIdData = {
+  body?: never;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: "/api/v1/logs/sendlog/{id}";
+};
+
+export type GetApiV1LogsSendlogByIdErrors = {
+  /**
+   * Missing or invalid bearer token
+   */
+  401: unknown;
+  /**
+   * Insufficient role
+   */
+  403: unknown;
+  /**
+   * Sendlog entry not found
+   */
+  404: unknown;
+};
+
+export type GetApiV1LogsSendlogByIdResponses = {
+  /**
+   * Sendlog detail
+   */
+  200: SendlogDetail;
+};
+
+export type GetApiV1LogsSendlogByIdResponse =
+  GetApiV1LogsSendlogByIdResponses[keyof GetApiV1LogsSendlogByIdResponses];
+
+export type PostApiV1AuthLoginData = {
+  body: {
+    email: string;
+    password: string;
+    /**
+     * Stable name of this installation, shown to the member in their token list
+     */
+    deviceName: string;
+  };
+  path?: never;
+  query?: never;
+  url: "/api/v1/auth/login";
+};
+
+export type PostApiV1AuthLoginErrors = {
+  /**
+   * Malformed body or invalid device name (bad_request, invalid_device_name)
+   */
+  400: ErrorResponse;
+  /**
+   * Wrong email or password (invalid_credentials)
+   */
+  401: ErrorResponse;
+  /**
+   * The account cannot sign in yet or any more (account_blocked, email_not_verified, pending_approval); the member fixes it on the website
+   */
+  403: ErrorResponse;
+  /**
+   * Too many attempts (too_many_attempts, with Retry-After) or login protection active (login_restricted); sign in on the website
+   */
+  429: ErrorResponse;
+};
+
+export type PostApiV1AuthLoginError =
+  PostApiV1AuthLoginErrors[keyof PostApiV1AuthLoginErrors];
+
+export type PostApiV1AuthLoginResponses = {
+  /**
+   * Signed in
+   */
+  200: LoginResult;
+};
+
+export type PostApiV1AuthLoginResponse =
+  PostApiV1AuthLoginResponses[keyof PostApiV1AuthLoginResponses];
+
+export type PostApiV1AuthLogoutData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/v1/auth/logout";
+};
+
+export type PostApiV1AuthLogoutErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+};
+
+export type PostApiV1AuthLogoutResponses = {
+  /**
+   * Token revoked
+   */
+  204: void;
+};
+
+export type PostApiV1AuthLogoutResponse =
+  PostApiV1AuthLogoutResponses[keyof PostApiV1AuthLogoutResponses];
+
+export type GetApiV1GroupsByGroupSlugCmsData = {
+  body?: never;
+  path: {
+    groupSlug: string;
+  };
+  query?: {
+    /**
+     * Two-letter language code. If omitted, each item's first available language is used. If given but the page lacks that language, falls back to 'en' (or the first available).
+     */
+    language?: string;
+  };
+  url: "/api/v1/groups/{groupSlug}/cms";
+};
+
+export type GetApiV1GroupsByGroupSlugCmsErrors = {
+  /**
+   * Group not found
+   */
+  404: ErrorResponse;
+};
+
+export type GetApiV1GroupsByGroupSlugCmsError =
+  GetApiV1GroupsByGroupSlugCmsErrors[keyof GetApiV1GroupsByGroupSlugCmsErrors];
+
+export type GetApiV1GroupsByGroupSlugCmsResponses = {
+  /**
+   * List of CMS pages
+   */
+  200: CmsPageList;
+};
+
+export type GetApiV1GroupsByGroupSlugCmsResponse =
+  GetApiV1GroupsByGroupSlugCmsResponses[keyof GetApiV1GroupsByGroupSlugCmsResponses];
+
+export type GetApiV1GroupsByGroupSlugCmsByCmsSlugData = {
+  body?: never;
+  path: {
+    groupSlug: string;
+    cmsSlug: string;
+  };
+  query?: {
+    language?: string;
+  };
+  url: "/api/v1/groups/{groupSlug}/cms/{cmsSlug}";
+};
+
+export type GetApiV1GroupsByGroupSlugCmsByCmsSlugErrors = {
+  /**
+   * Group not found, or page not found / not visible in this group
+   */
+  404: ErrorResponse;
+};
+
+export type GetApiV1GroupsByGroupSlugCmsByCmsSlugError =
+  GetApiV1GroupsByGroupSlugCmsByCmsSlugErrors[keyof GetApiV1GroupsByGroupSlugCmsByCmsSlugErrors];
+
+export type GetApiV1GroupsByGroupSlugCmsByCmsSlugResponses = {
+  /**
+   * CMS page metadata
+   */
+  200: CmsPage;
+};
+
+export type GetApiV1GroupsByGroupSlugCmsByCmsSlugResponse =
+  GetApiV1GroupsByGroupSlugCmsByCmsSlugResponses[keyof GetApiV1GroupsByGroupSlugCmsByCmsSlugResponses];
+
+export type DeleteApiV1EventsByIdRsvpData = {
+  body?: never;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: "/api/v1/events/{id}/rsvp";
+};
+
+export type DeleteApiV1EventsByIdRsvpErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Event not found
+   */
+  404: ErrorResponse;
+};
+
+export type DeleteApiV1EventsByIdRsvpError =
+  DeleteApiV1EventsByIdRsvpErrors[keyof DeleteApiV1EventsByIdRsvpErrors];
+
+export type DeleteApiV1EventsByIdRsvpResponses = {
+  /**
+   * RSVP removed (or already absent)
+   */
+  200: RsvpResult;
+};
+
+export type DeleteApiV1EventsByIdRsvpResponse =
+  DeleteApiV1EventsByIdRsvpResponses[keyof DeleteApiV1EventsByIdRsvpResponses];
+
+export type PostApiV1EventsByIdRsvpData = {
+  body?: never;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: "/api/v1/events/{id}/rsvp";
+};
+
+export type PostApiV1EventsByIdRsvpErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Not allowed (group membership / blocked)
+   */
+  403: ErrorResponse;
+  /**
+   * Event not found
+   */
+  404: ErrorResponse;
+  /**
+   * Event canceled or already started
+   */
+  409: ErrorResponse;
+};
+
+export type PostApiV1EventsByIdRsvpError =
+  PostApiV1EventsByIdRsvpErrors[keyof PostApiV1EventsByIdRsvpErrors];
+
+export type PostApiV1EventsByIdRsvpResponses = {
+  /**
+   * RSVP added (or already present)
+   */
+  200: RsvpResult;
+};
+
+export type PostApiV1EventsByIdRsvpResponse =
+  PostApiV1EventsByIdRsvpResponses[keyof PostApiV1EventsByIdRsvpResponses];
+
+export type PutApiV1EventsByIdRsvpData = {
+  body: {
+    going: boolean;
+    /**
+     * Guests the member brings, 0 to 5; ignored when not going
+     */
+    guests?: number;
+  };
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: "/api/v1/events/{id}/rsvp";
+};
+
+export type PutApiV1EventsByIdRsvpErrors = {
+  /**
+   * Body is not an object, or going is not a boolean (bad_request)
+   */
+  400: ErrorResponse;
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Not allowed (not_a_member)
+   */
+  403: ErrorResponse;
+  /**
+   * Event not found
+   */
+  404: ErrorResponse;
+  /**
+   * Event canceled or already started (event_canceled, event_started)
+   */
+  409: ErrorResponse;
+  /**
+   * Guest count out of range (validation_failed)
+   */
+  422: ErrorResponse;
+};
+
+export type PutApiV1EventsByIdRsvpError =
+  PutApiV1EventsByIdRsvpErrors[keyof PutApiV1EventsByIdRsvpErrors];
+
+export type PutApiV1EventsByIdRsvpResponses = {
+  /**
+   * Resulting RSVP state
+   */
+  200: RsvpResult;
+};
+
+export type PutApiV1EventsByIdRsvpResponse =
+  PutApiV1EventsByIdRsvpResponses[keyof PutApiV1EventsByIdRsvpResponses];
+
+export type GetApiV1EventsByIdOccurrencesData = {
+  body?: never;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: "/api/v1/events/{id}/occurrences";
+};
+
+export type GetApiV1EventsByIdOccurrencesErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Event not found
+   */
+  404: ErrorResponse;
+};
+
+export type GetApiV1EventsByIdOccurrencesError =
+  GetApiV1EventsByIdOccurrencesErrors[keyof GetApiV1EventsByIdOccurrencesErrors];
+
+export type GetApiV1EventsByIdOccurrencesResponses = {
+  /**
+   * Upcoming occurrences of the series
+   */
+  200: EventList;
+};
+
+export type GetApiV1EventsByIdOccurrencesResponse =
+  GetApiV1EventsByIdOccurrencesResponses[keyof GetApiV1EventsByIdOccurrencesResponses];
+
+export type GetApiV1EventsByIdAttendeesData = {
+  body?: never;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: "/api/v1/events/{id}/attendees";
+};
+
+export type GetApiV1EventsByIdAttendeesErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Token without the event-actions:read scope (insufficient_scope)
+   */
+  403: ErrorResponse;
+  /**
+   * Event not found or not visible to the caller (not_found)
+   */
+  404: ErrorResponse;
+};
+
+export type GetApiV1EventsByIdAttendeesError =
+  GetApiV1EventsByIdAttendeesErrors[keyof GetApiV1EventsByIdAttendeesErrors];
+
+export type GetApiV1EventsByIdAttendeesResponses = {
+  /**
+   * The people coming
+   */
+  200: AttendeeList;
+};
+
+export type GetApiV1EventsByIdAttendeesResponse =
+  GetApiV1EventsByIdAttendeesResponses[keyof GetApiV1EventsByIdAttendeesResponses];
+
+export type GetApiV1EventsByIdCommentsData = {
+  body?: never;
+  path: {
+    id: number;
+  };
+  query?: {
+    /**
+     * Only comments older than this comment id
+     */
+    before?: number;
+    limit?: number;
+  };
+  url: "/api/v1/events/{id}/comments";
+};
+
+export type GetApiV1EventsByIdCommentsErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Token without the event-actions:read scope (insufficient_scope)
+   */
+  403: ErrorResponse;
+  /**
+   * Event not found or not visible to the caller (not_found)
+   */
+  404: ErrorResponse;
+};
+
+export type GetApiV1EventsByIdCommentsError =
+  GetApiV1EventsByIdCommentsErrors[keyof GetApiV1EventsByIdCommentsErrors];
+
+export type GetApiV1EventsByIdCommentsResponses = {
+  /**
+   * A page of comments
+   */
+  200: CommentList;
+};
+
+export type GetApiV1EventsByIdCommentsResponse =
+  GetApiV1EventsByIdCommentsResponses[keyof GetApiV1EventsByIdCommentsResponses];
+
+export type PostApiV1EventsByIdCommentsData = {
+  body: {
+    content?: string;
+  };
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: "/api/v1/events/{id}/comments";
+};
+
+export type PostApiV1EventsByIdCommentsErrors = {
+  /**
+   * content_required or content_too_long
+   */
+  400: ErrorResponse;
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Not allowed
+   */
+  403: ErrorResponse;
+  /**
+   * Event not found
+   */
+  404: ErrorResponse;
+};
+
+export type PostApiV1EventsByIdCommentsError =
+  PostApiV1EventsByIdCommentsErrors[keyof PostApiV1EventsByIdCommentsErrors];
+
+export type PostApiV1EventsByIdCommentsResponses = {
+  /**
+   * Comment created
+   */
+  201: CommentCreated;
+};
+
+export type PostApiV1EventsByIdCommentsResponse =
+  PostApiV1EventsByIdCommentsResponses[keyof PostApiV1EventsByIdCommentsResponses];
+
+export type GetApiV1EventsByIdImagesData = {
+  body?: never;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: "/api/v1/events/{id}/images";
+};
+
+export type GetApiV1EventsByIdImagesErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Token without the event-actions:read scope (insufficient_scope)
+   */
+  403: ErrorResponse;
+  /**
+   * Event not found or not visible to the caller (not_found)
+   */
+  404: ErrorResponse;
+};
+
+export type GetApiV1EventsByIdImagesError =
+  GetApiV1EventsByIdImagesErrors[keyof GetApiV1EventsByIdImagesErrors];
+
+export type GetApiV1EventsByIdImagesResponses = {
+  /**
+   * The photos of the event
+   */
+  200: ImageList;
+};
+
+export type GetApiV1EventsByIdImagesResponse =
+  GetApiV1EventsByIdImagesResponses[keyof GetApiV1EventsByIdImagesResponses];
+
+export type PostApiV1EventsByIdImagesData = {
+  body: {
+    file?: Blob | File;
+  };
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: "/api/v1/events/{id}/images";
+};
+
+export type PostApiV1EventsByIdImagesErrors = {
+  /**
+   * file_required, file_rejected or upload_failed
+   */
+  400: ErrorResponse;
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Not allowed
+   */
+  403: ErrorResponse;
+  /**
+   * Event not found
+   */
+  404: ErrorResponse;
+};
+
+export type PostApiV1EventsByIdImagesError =
+  PostApiV1EventsByIdImagesErrors[keyof PostApiV1EventsByIdImagesErrors];
+
+export type PostApiV1EventsByIdImagesResponses = {
+  /**
+   * Image uploaded
+   */
+  201: ImageUploaded;
+};
+
+export type PostApiV1EventsByIdImagesResponse =
+  PostApiV1EventsByIdImagesResponses[keyof PostApiV1EventsByIdImagesResponses];
+
+export type DeleteApiV1EventsByIdCommentsByCommentIdData = {
+  body?: never;
+  path: {
+    id: number;
+    commentId: number;
+  };
+  query?: never;
+  url: "/api/v1/events/{id}/comments/{commentId}";
+};
+
+export type DeleteApiV1EventsByIdCommentsByCommentIdErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Not your comment and not admin
+   */
+  403: ErrorResponse;
+  /**
+   * Comment or event not found
+   */
+  404: ErrorResponse;
+};
+
+export type DeleteApiV1EventsByIdCommentsByCommentIdError =
+  DeleteApiV1EventsByIdCommentsByCommentIdErrors[keyof DeleteApiV1EventsByIdCommentsByCommentIdErrors];
+
+export type DeleteApiV1EventsByIdCommentsByCommentIdResponses = {
+  /**
+   * Comment deleted
+   */
+  204: void;
+};
+
+export type DeleteApiV1EventsByIdCommentsByCommentIdResponse =
+  DeleteApiV1EventsByIdCommentsByCommentIdResponses[keyof DeleteApiV1EventsByIdCommentsByCommentIdResponses];
+
+export type DeleteApiV1EventsByIdImagesByImageIdData = {
+  body?: never;
+  path: {
+    id: number;
+    imageId: number;
+  };
+  query?: never;
+  url: "/api/v1/events/{id}/images/{imageId}";
+};
+
+export type DeleteApiV1EventsByIdImagesByImageIdErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Not your image and not admin
+   */
+  403: ErrorResponse;
+  /**
+   * Image or event not found
+   */
+  404: ErrorResponse;
+};
+
+export type DeleteApiV1EventsByIdImagesByImageIdError =
+  DeleteApiV1EventsByIdImagesByImageIdErrors[keyof DeleteApiV1EventsByIdImagesByImageIdErrors];
+
+export type DeleteApiV1EventsByIdImagesByImageIdResponses = {
+  /**
+   * Image deleted
+   */
+  204: void;
+};
+
+export type DeleteApiV1EventsByIdImagesByImageIdResponse =
+  DeleteApiV1EventsByIdImagesByImageIdResponses[keyof DeleteApiV1EventsByIdImagesByImageIdResponses];
 
 export type GetApiV1EventsData = {
   body?: never;
@@ -431,6 +1958,10 @@ export type GetApiV1EventsData = {
     to?: Date;
     limit?: number;
     offset?: number;
+    /**
+     * Group slug; an unknown slug returns an empty list
+     */
+    group?: string;
   };
   url: "/api/v1/events";
 };
@@ -475,276 +2006,6 @@ export type GetApiV1EventsByIdResponses = {
 
 export type GetApiV1EventsByIdResponse =
   GetApiV1EventsByIdResponses[keyof GetApiV1EventsByIdResponses];
-
-export type PostApiV1EventsByIdCommentsData = {
-  body: {
-    content?: string;
-  };
-  path?: never;
-  query?: never;
-  url: "/api/v1/events/{id}/comments";
-};
-
-export type PostApiV1EventsByIdCommentsErrors = {
-  /**
-   * Empty content
-   */
-  400: ErrorResponse;
-  /**
-   * Missing or invalid Bearer token
-   */
-  401: unknown;
-  /**
-   * Not allowed
-   */
-  403: unknown;
-  /**
-   * Event not found
-   */
-  404: unknown;
-};
-
-export type PostApiV1EventsByIdCommentsError =
-  PostApiV1EventsByIdCommentsErrors[keyof PostApiV1EventsByIdCommentsErrors];
-
-export type PostApiV1EventsByIdCommentsResponses = {
-  /**
-   * Comment created
-   */
-  201: CommentCreated;
-};
-
-export type PostApiV1EventsByIdCommentsResponse =
-  PostApiV1EventsByIdCommentsResponses[keyof PostApiV1EventsByIdCommentsResponses];
-
-export type DeleteApiV1EventsByIdCommentsByCommentIdData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/v1/events/{id}/comments/{commentId}";
-};
-
-export type DeleteApiV1EventsByIdCommentsByCommentIdErrors = {
-  /**
-   * Missing or invalid Bearer token
-   */
-  401: unknown;
-  /**
-   * Not your comment and not admin
-   */
-  403: unknown;
-  /**
-   * Comment or event not found
-   */
-  404: unknown;
-};
-
-export type DeleteApiV1EventsByIdCommentsByCommentIdResponses = {
-  /**
-   * Comment deleted
-   */
-  204: void;
-};
-
-export type DeleteApiV1EventsByIdCommentsByCommentIdResponse =
-  DeleteApiV1EventsByIdCommentsByCommentIdResponses[keyof DeleteApiV1EventsByIdCommentsByCommentIdResponses];
-
-export type PostApiV1EventsByIdImagesData = {
-  body: {
-    file?: Blob | File;
-  };
-  path?: never;
-  query?: never;
-  url: "/api/v1/events/{id}/images";
-};
-
-export type PostApiV1EventsByIdImagesErrors = {
-  /**
-   * No file or unsupported format
-   */
-  400: ErrorResponse;
-  /**
-   * Missing or invalid Bearer token
-   */
-  401: unknown;
-  /**
-   * Not allowed
-   */
-  403: unknown;
-  /**
-   * Event not found
-   */
-  404: unknown;
-};
-
-export type PostApiV1EventsByIdImagesError =
-  PostApiV1EventsByIdImagesErrors[keyof PostApiV1EventsByIdImagesErrors];
-
-export type PostApiV1EventsByIdImagesResponses = {
-  /**
-   * Image uploaded
-   */
-  201: ImageUploaded;
-};
-
-export type PostApiV1EventsByIdImagesResponse =
-  PostApiV1EventsByIdImagesResponses[keyof PostApiV1EventsByIdImagesResponses];
-
-export type DeleteApiV1EventsByIdImagesByImageIdData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/v1/events/{id}/images/{imageId}";
-};
-
-export type DeleteApiV1EventsByIdImagesByImageIdErrors = {
-  /**
-   * Missing or invalid Bearer token
-   */
-  401: unknown;
-  /**
-   * Not your image and not admin
-   */
-  403: unknown;
-  /**
-   * Image or event not found
-   */
-  404: unknown;
-};
-
-export type DeleteApiV1EventsByIdImagesByImageIdResponses = {
-  /**
-   * Image deleted
-   */
-  204: void;
-};
-
-export type DeleteApiV1EventsByIdImagesByImageIdResponse =
-  DeleteApiV1EventsByIdImagesByImageIdResponses[keyof DeleteApiV1EventsByIdImagesByImageIdResponses];
-
-export type DeleteApiV1EventsByIdRsvpData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/v1/events/{id}/rsvp";
-};
-
-export type DeleteApiV1EventsByIdRsvpErrors = {
-  /**
-   * Missing or invalid Bearer token
-   */
-  401: unknown;
-  /**
-   * Not allowed
-   */
-  403: unknown;
-  /**
-   * Event not found
-   */
-  404: ErrorResponse;
-  /**
-   * Event canceled or already started
-   */
-  409: ErrorResponse;
-};
-
-export type DeleteApiV1EventsByIdRsvpError =
-  DeleteApiV1EventsByIdRsvpErrors[keyof DeleteApiV1EventsByIdRsvpErrors];
-
-export type DeleteApiV1EventsByIdRsvpResponses = {
-  /**
-   * RSVP removed (or already absent)
-   */
-  200: RsvpResult;
-};
-
-export type DeleteApiV1EventsByIdRsvpResponse =
-  DeleteApiV1EventsByIdRsvpResponses[keyof DeleteApiV1EventsByIdRsvpResponses];
-
-export type PostApiV1EventsByIdRsvpData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/v1/events/{id}/rsvp";
-};
-
-export type PostApiV1EventsByIdRsvpErrors = {
-  /**
-   * Missing or invalid Bearer token
-   */
-  401: unknown;
-  /**
-   * Not allowed (group membership / blocked)
-   */
-  403: unknown;
-  /**
-   * Event not found
-   */
-  404: ErrorResponse;
-  /**
-   * Event canceled or already started
-   */
-  409: ErrorResponse;
-};
-
-export type PostApiV1EventsByIdRsvpError =
-  PostApiV1EventsByIdRsvpErrors[keyof PostApiV1EventsByIdRsvpErrors];
-
-export type PostApiV1EventsByIdRsvpResponses = {
-  /**
-   * RSVP added (or already present)
-   */
-  200: RsvpResult;
-};
-
-export type PostApiV1EventsByIdRsvpResponse =
-  PostApiV1EventsByIdRsvpResponses[keyof PostApiV1EventsByIdRsvpResponses];
-
-export type GetApiV1GroupsData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/v1/groups";
-};
-
-export type GetApiV1GroupsResponses = {
-  /**
-   * Array of group summaries
-   */
-  200: GroupList;
-};
-
-export type GetApiV1GroupsResponse =
-  GetApiV1GroupsResponses[keyof GetApiV1GroupsResponses];
-
-export type GetApiV1GroupsByGroupSlugData = {
-  body?: never;
-  path: {
-    groupSlug: string;
-  };
-  query?: never;
-  url: "/api/v1/groups/{groupSlug}";
-};
-
-export type GetApiV1GroupsByGroupSlugErrors = {
-  /**
-   * Group not found
-   */
-  404: ErrorResponse;
-};
-
-export type GetApiV1GroupsByGroupSlugError =
-  GetApiV1GroupsByGroupSlugErrors[keyof GetApiV1GroupsByGroupSlugErrors];
-
-export type GetApiV1GroupsByGroupSlugResponses = {
-  /**
-   * Group detail
-   */
-  200: GroupDetail;
-};
-
-export type GetApiV1GroupsByGroupSlugResponse =
-  GetApiV1GroupsByGroupSlugResponses[keyof GetApiV1GroupsByGroupSlugResponses];
 
 export type GetApiV1GroupsByGroupSlugAdminMembersData = {
   body?: never;
@@ -820,71 +2081,51 @@ export type GetApiV1GroupsByGroupSlugAdminSettingsResponses = {
 export type GetApiV1GroupsByGroupSlugAdminSettingsResponse =
   GetApiV1GroupsByGroupSlugAdminSettingsResponses[keyof GetApiV1GroupsByGroupSlugAdminSettingsResponses];
 
-export type GetApiV1GroupsByGroupSlugCmsData = {
+export type GetApiV1GroupsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/v1/groups";
+};
+
+export type GetApiV1GroupsResponses = {
+  /**
+   * Array of group summaries
+   */
+  200: GroupList;
+};
+
+export type GetApiV1GroupsResponse =
+  GetApiV1GroupsResponses[keyof GetApiV1GroupsResponses];
+
+export type GetApiV1GroupsByGroupSlugData = {
   body?: never;
   path: {
     groupSlug: string;
   };
-  query?: {
-    /**
-     * Two-letter language code. If omitted, each item's first available language is used. If given but the page lacks that language, falls back to 'en' (or the first available).
-     */
-    language?: string;
-  };
-  url: "/api/v1/groups/{groupSlug}/cms";
+  query?: never;
+  url: "/api/v1/groups/{groupSlug}";
 };
 
-export type GetApiV1GroupsByGroupSlugCmsErrors = {
+export type GetApiV1GroupsByGroupSlugErrors = {
   /**
    * Group not found
    */
   404: ErrorResponse;
 };
 
-export type GetApiV1GroupsByGroupSlugCmsError =
-  GetApiV1GroupsByGroupSlugCmsErrors[keyof GetApiV1GroupsByGroupSlugCmsErrors];
+export type GetApiV1GroupsByGroupSlugError =
+  GetApiV1GroupsByGroupSlugErrors[keyof GetApiV1GroupsByGroupSlugErrors];
 
-export type GetApiV1GroupsByGroupSlugCmsResponses = {
+export type GetApiV1GroupsByGroupSlugResponses = {
   /**
-   * List of CMS pages
+   * Group detail
    */
-  200: CmsPageList;
+  200: GroupDetail;
 };
 
-export type GetApiV1GroupsByGroupSlugCmsResponse =
-  GetApiV1GroupsByGroupSlugCmsResponses[keyof GetApiV1GroupsByGroupSlugCmsResponses];
-
-export type GetApiV1GroupsByGroupSlugCmsByCmsSlugData = {
-  body?: never;
-  path: {
-    groupSlug: string;
-    cmsSlug: string;
-  };
-  query?: {
-    language?: string;
-  };
-  url: "/api/v1/groups/{groupSlug}/cms/{cmsSlug}";
-};
-
-export type GetApiV1GroupsByGroupSlugCmsByCmsSlugErrors = {
-  /**
-   * Group not found, or page not found / not visible in this group
-   */
-  404: ErrorResponse;
-};
-
-export type GetApiV1GroupsByGroupSlugCmsByCmsSlugError =
-  GetApiV1GroupsByGroupSlugCmsByCmsSlugErrors[keyof GetApiV1GroupsByGroupSlugCmsByCmsSlugErrors];
-
-export type GetApiV1GroupsByGroupSlugCmsByCmsSlugResponses = {
-  /**
-   * CMS page metadata
-   */
-  200: CmsPage;
-};
-
-export type GetApiV1GroupsByGroupSlugCmsByCmsSlugResponse =
-  GetApiV1GroupsByGroupSlugCmsByCmsSlugResponses[keyof GetApiV1GroupsByGroupSlugCmsByCmsSlugResponses];
+export type GetApiV1GroupsByGroupSlugResponse =
+  GetApiV1GroupsByGroupSlugResponses[keyof GetApiV1GroupsByGroupSlugResponses];
 
 export type GetApiV1MeData = {
   body?: never;
@@ -909,10 +2150,118 @@ export type GetApiV1MeResponses = {
 
 export type GetApiV1MeResponse = GetApiV1MeResponses[keyof GetApiV1MeResponses];
 
-export type GetApiV1MeRsvpsData = {
+export type PatchApiV1MeData = {
+  body: {
+    name?: string;
+    bio?: string | null;
+    /**
+     * One of the languages enabled on this platform
+     */
+    locale?: string;
+    public?: boolean;
+  };
+  path?: never;
+  query?: never;
+  url: "/api/v1/me";
+};
+
+export type PatchApiV1MeErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Token without the me:write scope (insufficient_scope)
+   */
+  403: ErrorResponse;
+  /**
+   * A field was rejected (validation_failed); errors names them: name_required, name_too_long, locale_not_enabled, bio_invalid, public_invalid
+   */
+  422: ValidationErrorResponse;
+};
+
+export type PatchApiV1MeError = PatchApiV1MeErrors[keyof PatchApiV1MeErrors];
+
+export type PatchApiV1MeResponses = {
+  /**
+   * The saved profile
+   */
+  200: MeProfile;
+};
+
+export type PatchApiV1MeResponse =
+  PatchApiV1MeResponses[keyof PatchApiV1MeResponses];
+
+export type PostApiV1MeAvatarData = {
+  body: {
+    file?: Blob | File;
+  };
+  path?: never;
+  query?: never;
+  url: "/api/v1/me/avatar";
+};
+
+export type PostApiV1MeAvatarErrors = {
+  /**
+   * file_required, file_rejected or upload_failed
+   */
+  400: ErrorResponse;
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Token without the me:write scope (insufficient_scope)
+   */
+  403: ErrorResponse;
+};
+
+export type PostApiV1MeAvatarError =
+  PostApiV1MeAvatarErrors[keyof PostApiV1MeAvatarErrors];
+
+export type PostApiV1MeAvatarResponses = {
+  /**
+   * The profile with its new avatar
+   */
+  200: MeProfile;
+};
+
+export type PostApiV1MeAvatarResponse =
+  PostApiV1MeAvatarResponses[keyof PostApiV1MeAvatarResponses];
+
+export type GetApiV1MeGroupsData = {
   body?: never;
   path?: never;
   query?: never;
+  url: "/api/v1/me/groups";
+};
+
+export type GetApiV1MeGroupsErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+};
+
+export type GetApiV1MeGroupsResponses = {
+  /**
+   * The memberships of the authenticated member
+   */
+  200: MembershipList;
+};
+
+export type GetApiV1MeGroupsResponse =
+  GetApiV1MeGroupsResponses[keyof GetApiV1MeGroupsResponses];
+
+export type GetApiV1MeRsvpsData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Language code; overrides Accept-Language
+     */
+    locale?: string;
+  };
   url: "/api/v1/me/rsvps";
 };
 
@@ -932,3 +2281,223 @@ export type GetApiV1MeRsvpsResponses = {
 
 export type GetApiV1MeRsvpsResponse =
   GetApiV1MeRsvpsResponses[keyof GetApiV1MeRsvpsResponses];
+
+export type GetApiV1MeEventsData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * ISO-8601 lower bound (default: now)
+     */
+    from?: Date;
+    limit?: number;
+    offset?: number;
+    /**
+     * Language code; overrides Accept-Language
+     */
+    locale?: string;
+  };
+  url: "/api/v1/me/events";
+};
+
+export type GetApiV1MeEventsErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+};
+
+export type GetApiV1MeEventsResponses = {
+  /**
+   * Paginated event list
+   */
+  200: EventList;
+};
+
+export type GetApiV1MeEventsResponse =
+  GetApiV1MeEventsResponses[keyof GetApiV1MeEventsResponses];
+
+export type GetApiV1MembershipsInvitationsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/v1/memberships/invitations";
+};
+
+export type GetApiV1MembershipsInvitationsErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * Token without the memberships:read scope (insufficient_scope)
+   */
+  403: ErrorResponse;
+};
+
+export type GetApiV1MembershipsInvitationsError =
+  GetApiV1MembershipsInvitationsErrors[keyof GetApiV1MembershipsInvitationsErrors];
+
+export type GetApiV1MembershipsInvitationsResponses = {
+  /**
+   * The open invitations
+   */
+  200: InvitationList;
+};
+
+export type GetApiV1MembershipsInvitationsResponse =
+  GetApiV1MembershipsInvitationsResponses[keyof GetApiV1MembershipsInvitationsResponses];
+
+export type PostApiV1MembershipsInvitationsByIdAcceptData = {
+  body?: {
+    /**
+     * Answers the platform crossing: whether the platform may send announcements and event mail
+     */
+    platformMailConsent?: boolean;
+  };
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: "/api/v1/memberships/invitations/{id}/accept";
+};
+
+export type PostApiV1MembershipsInvitationsByIdAcceptErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * No such invitation for this member (invitation_not_found)
+   */
+  404: ErrorResponse;
+  /**
+   * blocked_in_group, membership_rejected or platform_crossing_required
+   */
+  409: ErrorResponse;
+};
+
+export type PostApiV1MembershipsInvitationsByIdAcceptError =
+  PostApiV1MembershipsInvitationsByIdAcceptErrors[keyof PostApiV1MembershipsInvitationsByIdAcceptErrors];
+
+export type PostApiV1MembershipsInvitationsByIdAcceptResponses = {
+  /**
+   * The resulting membership
+   */
+  200: Membership;
+};
+
+export type PostApiV1MembershipsInvitationsByIdAcceptResponse =
+  PostApiV1MembershipsInvitationsByIdAcceptResponses[keyof PostApiV1MembershipsInvitationsByIdAcceptResponses];
+
+export type PostApiV1MembershipsInvitationsByIdDeclineData = {
+  body?: never;
+  path: {
+    id: number;
+  };
+  query?: never;
+  url: "/api/v1/memberships/invitations/{id}/decline";
+};
+
+export type PostApiV1MembershipsInvitationsByIdDeclineErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * No such invitation for this member (invitation_not_found)
+   */
+  404: ErrorResponse;
+};
+
+export type PostApiV1MembershipsInvitationsByIdDeclineError =
+  PostApiV1MembershipsInvitationsByIdDeclineErrors[keyof PostApiV1MembershipsInvitationsByIdDeclineErrors];
+
+export type PostApiV1MembershipsInvitationsByIdDeclineResponses = {
+  /**
+   * Invitation declined
+   */
+  204: void;
+};
+
+export type PostApiV1MembershipsInvitationsByIdDeclineResponse =
+  PostApiV1MembershipsInvitationsByIdDeclineResponses[keyof PostApiV1MembershipsInvitationsByIdDeclineResponses];
+
+export type DeleteApiV1MembershipsGroupsBySlugData = {
+  body?: never;
+  path: {
+    slug: string;
+  };
+  query?: never;
+  url: "/api/v1/memberships/groups/{slug}";
+};
+
+export type DeleteApiV1MembershipsGroupsBySlugErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * No such group, or no membership in it (not_found)
+   */
+  404: ErrorResponse;
+  /**
+   * last_owner, blocked_in_group or may_not_leave_platform
+   */
+  409: ErrorResponse;
+};
+
+export type DeleteApiV1MembershipsGroupsBySlugError =
+  DeleteApiV1MembershipsGroupsBySlugErrors[keyof DeleteApiV1MembershipsGroupsBySlugErrors];
+
+export type DeleteApiV1MembershipsGroupsBySlugResponses = {
+  /**
+   * Membership ended
+   */
+  204: void;
+};
+
+export type DeleteApiV1MembershipsGroupsBySlugResponse =
+  DeleteApiV1MembershipsGroupsBySlugResponses[keyof DeleteApiV1MembershipsGroupsBySlugResponses];
+
+export type PostApiV1MembershipsGroupsBySlugData = {
+  body?: {
+    /**
+     * Answers the platform crossing: whether the platform may send announcements and event mail
+     */
+    platformMailConsent?: boolean;
+  };
+  path: {
+    slug: string;
+  };
+  query?: never;
+  url: "/api/v1/memberships/groups/{slug}";
+};
+
+export type PostApiV1MembershipsGroupsBySlugErrors = {
+  /**
+   * Missing or invalid Bearer token
+   */
+  401: unknown;
+  /**
+   * No such group (not_found)
+   */
+  404: ErrorResponse;
+  /**
+   * group_not_joinable, blocked_in_group or platform_crossing_required
+   */
+  409: ErrorResponse;
+};
+
+export type PostApiV1MembershipsGroupsBySlugError =
+  PostApiV1MembershipsGroupsBySlugErrors[keyof PostApiV1MembershipsGroupsBySlugErrors];
+
+export type PostApiV1MembershipsGroupsBySlugResponses = {
+  /**
+   * The resulting membership, approved or pending
+   */
+  200: Membership;
+};
+
+export type PostApiV1MembershipsGroupsBySlugResponse =
+  PostApiV1MembershipsGroupsBySlugResponses[keyof PostApiV1MembershipsGroupsBySlugResponses];

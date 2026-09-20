@@ -1,0 +1,32 @@
+{
+  "attendeeCount": 14,
+  "canceled": false,
+  "description": "Every Tuesday from 7:00 PM Travolta Bar, Wiener Strasse 14b, Kreuzberg\n\nBerlin's longest-running German-English language exchange, going strong since 2007.\n\nEvery Tuesday at Travolta Bar in Kreuzberg, locals, expats, and travellers get together to practise German or English in a relaxed setting. Whether your goal is improving your language skills or simply meeting new people in Berlin, you are very welcome.\n\nWhat to expect\n\n- Friendly and informal atmosphere\n- International crowd, locals and expats\n- All levels welcome\n- Speak German, English, or both\n- Separate tables for German and English, with more added as the evening grows\n\nLanguage exchange is part of the evening, but the focus is social. Many people come to make friends in Berlin and enjoy conversation. First time? Just say hi to the host and we'll introduce you around.\n\nMany regulars don't RSVP, so turnout is usually higher than the count shows.\n\nNear Görlitzer Bahnhof and Kottbusser Tor. Look for the Australian/EU or German/Berlin flags, or ask the bar staff for the language exchange group.\n\nThe bar allows smoking. In summer we usually sit outside, in colder or rainy weather we move inside. Free to attend, just buy a drink.",
+  "detailUrl": "https://meetagain.org/api/v1/events/117",
+  "group": {
+    "domain": "travolta-meetup.de",
+    "logoUrl": null,
+    "name": "German English Language Exchange",
+    "slug": "german-english-language-exchange-in-berlin",
+    "visibility": "public"
+  },
+  "id": 117,
+  "images": [],
+  "location": {
+    "city": "Berlin",
+    "name": "Travolta",
+    "postcode": "10999",
+    "street": "Wiener Strasse. 14b"
+  },
+  "myGuests": null,
+  "myRsvp": null,
+  "previewImageUrl": "https://meetagain.org/images/thumbnails/71cbfeca2e1c1417941fecbd19a55f10f5d24a1d_600x400.webp",
+  "rsvpCount": 1,
+  "seriesId": 2,
+  "start": "2026-09-22T19:00:00+02:00",
+  "stop": "2026-09-22T22:30:00+02:00",
+  "teaser": "Join us every Tuesday evening at Travolta Bar in Kreuzberg for a casual and fun German-English language exchange. Mark Twain once wrote that there's nothing you can't learn in Berlin except the German language.",
+  "title": "German English Language Exchange",
+  "type": 2,
+  "webUrl": "https://meetagain.org/en/event/117"
+}

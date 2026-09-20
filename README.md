@@ -87,6 +87,7 @@ just set-bot-webhook-url
 
 ```
 npm run generate     # generate files from API spec
+npm test             # run the test suite
 npm run dev          # start local dev server
 npm run deploy       # deploy to Cloudflare Workers
 npm run tail         # tail live logs from the deployed worker
@@ -95,9 +96,32 @@ npm run format       # format code with biome
 npm run typecheck    # run typescript typechecker
 ```
 
+## Testing
+
+```
+just test         # typecheck + full suite
+just resync-api   # re-download the API spec, regenerate the client, then verify
+```
+
+Nothing in the suite needs network access, a Cloudflare login or a Telegram token.
+
+- `test/api-contract.spec.ts` checks `api/openapi.json` still declares every endpoint
+  and field the bot reads. Run `just resync-api` after a MeetAgain API change: if the
+  platform drops or retypes something, these fail instead of the bot breaking in
+  production. They compare the *data contract*, so a spec that switches between `allOf`
+  inheritance and flat schemas passes unchanged.
+- `test/bot.spec.ts` drives real Telegram webhook updates through the worker with the
+  MeetAgain API stubbed by `test/fixtures/*.json` (captured from meetagain.org), and
+  asserts on the messages the bot sends back. Refresh a fixture by curling the live
+  endpoint into the same file.
+- `wrangler.test.jsonc` mirrors `wrangler.jsonc` without the `ai` binding. Workers AI is
+  remote-only, so keeping it would make the test runner demand a `wrangler login`. No
+  test path touches `env.AI`.
+
 ## Configuration
 
 - `wrangler.jsonc` -- Cloudflare Worker config. Contains the AI binding, environment variables, and compatibility flags.
+- `wrangler.test.jsonc` -- same config for tests, minus the AI binding.
 - `.dev.vars` -- local-only secrets (`BOT_TOKEN`). Never committed to git.
 - `api/openapi.json` -- OpenAPI spec for the MeetAgain backend. Used to generate the API client.
 

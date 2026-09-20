@@ -1,0 +1,13 @@
+{
+  "createdAt": "2026-06-23T13:25:04+02:00",
+  "description": "Another Country is an English Language Second Hand Bookshop, which is mostly used as a library. We have about twenty thousand books that you can buy or borrow. You simply pay the price of a book, which you get back, minus a 1,50 Euro charge, should you choose to return it. Another Country is also a club which hosts readings, cultural events, social evenings, filmnights and many other things.",
+  "detailUrl": "https://meetagain.org/api/v1/groups/another-country-bookshop",
+  "domain": "another-country.meetagain.org",
+  "languages": ["en"],
+  "logoUrl": "https://meetagain.org/images/thumbnails/e3ef16ec7c245bfa476fa7c97a9b94c24b9c9c3f_h120.webp",
+  "memberCount": 4,
+  "name": "Another Country Bookshop",
+  "previewImageUrl": "https://meetagain.org/images/thumbnails/e3ef16ec7c245bfa476fa7c97a9b94c24b9c9c3f_1200x630.webp",
+  "slug": "another-country-bookshop",
+  "visibility": "public"
+}

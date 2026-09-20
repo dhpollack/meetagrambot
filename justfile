@@ -7,6 +7,16 @@ default:
 setup: _download-openapi-spec
   npm install
 
+test:
+  npm run typecheck
+  npm test
+
+# Re-download the API spec, regenerate the client, and prove the bot still matches it
+resync-api: _download-openapi-spec
+  npm run generate
+  npm run typecheck
+  npm test
+
 deploy:
   npm run generate
   npm run deploy

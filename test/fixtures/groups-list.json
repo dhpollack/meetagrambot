@@ -1,0 +1,37 @@
+{
+  "items": [
+    {
+      "detailUrl": "https://meetagain.org/api/v1/groups/another-country-bookshop",
+      "domain": "another-country.meetagain.org",
+      "logoUrl": "https://meetagain.org/images/thumbnails/e3ef16ec7c245bfa476fa7c97a9b94c24b9c9c3f_h120.webp",
+      "name": "Another Country Bookshop",
+      "slug": "another-country-bookshop",
+      "visibility": "public"
+    },
+    {
+      "detailUrl": "https://meetagain.org/api/v1/groups/berlin-activities",
+      "domain": "berlin-activities.meetagain.org",
+      "logoUrl": null,
+      "name": "Berlin Activities",
+      "slug": "berlin-activities",
+      "visibility": "public"
+    },
+    {
+      "detailUrl": "https://meetagain.org/api/v1/groups/my-community",
+      "domain": "dragon-descendants.de",
+      "logoUrl": "https://meetagain.org/images/thumbnails/2f8b9dbfb6dce7080f1177545c4e3c4b1b9fe8dd_h120.webp",
+      "name": "Dragon Descendants",
+      "slug": "my-community",
+      "visibility": "public"
+    },
+    {
+      "detailUrl": "https://meetagain.org/api/v1/groups/german-english-language-exchange-in-berlin",
+      "domain": "travolta-meetup.de",
+      "logoUrl": null,
+      "name": "German English Language Exchange",
+      "slug": "german-english-language-exchange-in-berlin",
+      "visibility": "public"
+    }
+  ],
+  "total": 4
+}

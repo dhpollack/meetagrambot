@@ -1,0 +1,23 @@
+/**
+ * Test-only Wrangler config.
+ *
+ * Identical to wrangler.jsonc except that the `ai` binding is omitted: Workers AI
+ * is remote-only, so its presence makes vitest-pool-workers open a remote proxy
+ * session and fail without a `wrangler login`. Nothing under test touches env.AI -
+ * the command and callback handlers go straight to the MeetAgain API.
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "meetagrambot-test",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-05-03",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"vars": {
+		"BOT_INFO": "{\"id\":1,\"is_bot\":true,\"first_name\":\"testbot\",\"username\":\"TestBot\",\"can_join_groups\":true,\"can_read_all_group_messages\":false,\"supports_inline_queries\":false,\"can_connect_to_business\":false}",
+		"API_BASE_URL": "https://api.test",
+		"BOT_TOKEN": "1:TEST",
+		"TELEGRAM_SECRET_TOKEN": "test-secret"
+	}
+}
