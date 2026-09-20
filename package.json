@@ -7,13 +7,14 @@
     "tail": "wrangler tail",
     "dev": "wrangler dev",
     "start": "wrangler dev",
-    "test": "vitest",
+    "test": "vitest run",
     "cf-typegen": "wrangler types",
     "generate": "openapi-ts",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p test/tsconfig.json",
     "format": "biome format --write src/**",
     "check": "biome check src/*.ts",
-    "lint": "biome lint src/*.ts"
+    "lint": "biome lint src/*.ts",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.14",
