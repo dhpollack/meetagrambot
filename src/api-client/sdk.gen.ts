@@ -8,22 +8,34 @@ import {
 } from "./client";
 import { client } from "./client.gen";
 import {
-  getApiV1AdminLogsCronByIdResponseTransformer,
-  getApiV1AdminLogsCronResponseTransformer,
-  getApiV1AdminLogsSendlogByIdResponseTransformer,
-  getApiV1AdminLogsSendlogResponseTransformer,
-  getApiV1AdminSecurityIncidentsByIdResponseTransformer,
-  getApiV1AdminSecurityIncidentsResponseTransformer,
+  getApiV1EventsByIdCommentsResponseTransformer,
+  getApiV1EventsByIdOccurrencesResponseTransformer,
   getApiV1EventsByIdResponseTransformer,
   getApiV1EventsResponseTransformer,
   getApiV1GroupsByGroupSlugAdminMembersResponseTransformer,
   getApiV1GroupsByGroupSlugAdminSettingsResponseTransformer,
   getApiV1GroupsByGroupSlugResponseTransformer,
+  getApiV1LogsCronByIdResponseTransformer,
+  getApiV1LogsCronResponseTransformer,
+  getApiV1LogsSendlogByIdResponseTransformer,
+  getApiV1LogsSendlogResponseTransformer,
+  getApiV1MeEventsResponseTransformer,
+  getApiV1MeGroupsResponseTransformer,
+  getApiV1MembershipsInvitationsResponseTransformer,
   getApiV1MeResponseTransformer,
   getApiV1MeRsvpsResponseTransformer,
+  getApiV1SecurityIncidentsByIdResponseTransformer,
+  getApiV1SecurityIncidentsResponseTransformer,
+  patchApiV1MeResponseTransformer,
   postApiV1EventsByIdCommentsResponseTransformer,
+  postApiV1MeAvatarResponseTransformer,
+  postApiV1MembershipsGroupsBySlugResponseTransformer,
+  postApiV1MembershipsInvitationsByIdAcceptResponseTransformer,
 } from "./transformers.gen";
 import type {
+  DeleteApiV1CmsBlocksByBlockIdData,
+  DeleteApiV1CmsBlocksByBlockIdErrors,
+  DeleteApiV1CmsBlocksByBlockIdResponses,
   DeleteApiV1EventsByIdCommentsByCommentIdData,
   DeleteApiV1EventsByIdCommentsByCommentIdErrors,
   DeleteApiV1EventsByIdCommentsByCommentIdResponses,
@@ -33,28 +45,34 @@ import type {
   DeleteApiV1EventsByIdRsvpData,
   DeleteApiV1EventsByIdRsvpErrors,
   DeleteApiV1EventsByIdRsvpResponses,
+  DeleteApiV1MembershipsGroupsBySlugData,
+  DeleteApiV1MembershipsGroupsBySlugErrors,
+  DeleteApiV1MembershipsGroupsBySlugResponses,
   GetApiStatusData,
   GetApiStatusResponses,
-  GetApiV1AdminLogsCronByIdData,
-  GetApiV1AdminLogsCronByIdErrors,
-  GetApiV1AdminLogsCronByIdResponses,
-  GetApiV1AdminLogsCronData,
-  GetApiV1AdminLogsCronErrors,
-  GetApiV1AdminLogsCronResponses,
-  GetApiV1AdminLogsSendlogByIdData,
-  GetApiV1AdminLogsSendlogByIdErrors,
-  GetApiV1AdminLogsSendlogByIdResponses,
-  GetApiV1AdminLogsSendlogData,
-  GetApiV1AdminLogsSendlogErrors,
-  GetApiV1AdminLogsSendlogResponses,
-  GetApiV1AdminSecurityIncidentsByIdData,
-  GetApiV1AdminSecurityIncidentsByIdErrors,
-  GetApiV1AdminSecurityIncidentsByIdResponses,
-  GetApiV1AdminSecurityIncidentsData,
-  GetApiV1AdminSecurityIncidentsErrors,
-  GetApiV1AdminSecurityIncidentsResponses,
+  GetApiV1CmsBlockTypesData,
+  GetApiV1CmsBlockTypesErrors,
+  GetApiV1CmsBlockTypesResponses,
+  GetApiV1CmsPagesByIdBlocksData,
+  GetApiV1CmsPagesByIdBlocksErrors,
+  GetApiV1CmsPagesByIdBlocksResponses,
+  GetApiV1CmsPagesData,
+  GetApiV1CmsPagesErrors,
+  GetApiV1CmsPagesResponses,
+  GetApiV1EventsByIdAttendeesData,
+  GetApiV1EventsByIdAttendeesErrors,
+  GetApiV1EventsByIdAttendeesResponses,
+  GetApiV1EventsByIdCommentsData,
+  GetApiV1EventsByIdCommentsErrors,
+  GetApiV1EventsByIdCommentsResponses,
   GetApiV1EventsByIdData,
   GetApiV1EventsByIdErrors,
+  GetApiV1EventsByIdImagesData,
+  GetApiV1EventsByIdImagesErrors,
+  GetApiV1EventsByIdImagesResponses,
+  GetApiV1EventsByIdOccurrencesData,
+  GetApiV1EventsByIdOccurrencesErrors,
+  GetApiV1EventsByIdOccurrencesResponses,
   GetApiV1EventsByIdResponses,
   GetApiV1EventsData,
   GetApiV1EventsResponses,
@@ -75,12 +93,72 @@ import type {
   GetApiV1GroupsByGroupSlugResponses,
   GetApiV1GroupsData,
   GetApiV1GroupsResponses,
+  GetApiV1ImagesByIdContentData,
+  GetApiV1ImagesByIdContentErrors,
+  GetApiV1ImagesByIdContentResponses,
+  GetApiV1ImagesMissingAltData,
+  GetApiV1ImagesMissingAltErrors,
+  GetApiV1ImagesMissingAltResponses,
+  GetApiV1LogsCronByIdData,
+  GetApiV1LogsCronByIdErrors,
+  GetApiV1LogsCronByIdResponses,
+  GetApiV1LogsCronData,
+  GetApiV1LogsCronErrors,
+  GetApiV1LogsCronResponses,
+  GetApiV1LogsSendlogByIdData,
+  GetApiV1LogsSendlogByIdErrors,
+  GetApiV1LogsSendlogByIdResponses,
+  GetApiV1LogsSendlogData,
+  GetApiV1LogsSendlogErrors,
+  GetApiV1LogsSendlogResponses,
   GetApiV1MeData,
   GetApiV1MeErrors,
+  GetApiV1MeEventsData,
+  GetApiV1MeEventsErrors,
+  GetApiV1MeEventsResponses,
+  GetApiV1MeGroupsData,
+  GetApiV1MeGroupsErrors,
+  GetApiV1MeGroupsResponses,
+  GetApiV1MembershipsInvitationsData,
+  GetApiV1MembershipsInvitationsErrors,
+  GetApiV1MembershipsInvitationsResponses,
   GetApiV1MeResponses,
   GetApiV1MeRsvpsData,
   GetApiV1MeRsvpsErrors,
   GetApiV1MeRsvpsResponses,
+  GetApiV1SecurityIncidentsByIdData,
+  GetApiV1SecurityIncidentsByIdErrors,
+  GetApiV1SecurityIncidentsByIdResponses,
+  GetApiV1SecurityIncidentsData,
+  GetApiV1SecurityIncidentsErrors,
+  GetApiV1SecurityIncidentsResponses,
+  GetApiV1SeoActionsData,
+  GetApiV1SeoActionsErrors,
+  GetApiV1SeoActionsResponses,
+  GetApiV1SeoIssuesData,
+  GetApiV1SeoIssuesErrors,
+  GetApiV1SeoIssuesResponses,
+  GetApiV1SeoStatusData,
+  GetApiV1SeoStatusErrors,
+  GetApiV1SeoStatusResponses,
+  PatchApiV1CmsBlocksByBlockIdData,
+  PatchApiV1CmsBlocksByBlockIdErrors,
+  PatchApiV1CmsBlocksByBlockIdResponses,
+  PatchApiV1MeData,
+  PatchApiV1MeErrors,
+  PatchApiV1MeResponses,
+  PostApiV1AuthLoginData,
+  PostApiV1AuthLoginErrors,
+  PostApiV1AuthLoginResponses,
+  PostApiV1AuthLogoutData,
+  PostApiV1AuthLogoutErrors,
+  PostApiV1AuthLogoutResponses,
+  PostApiV1CmsBlocksByBlockIdMoveData,
+  PostApiV1CmsBlocksByBlockIdMoveErrors,
+  PostApiV1CmsBlocksByBlockIdMoveResponses,
+  PostApiV1CmsPagesByIdBlocksData,
+  PostApiV1CmsPagesByIdBlocksErrors,
+  PostApiV1CmsPagesByIdBlocksResponses,
   PostApiV1EventsByIdCommentsData,
   PostApiV1EventsByIdCommentsErrors,
   PostApiV1EventsByIdCommentsResponses,
@@ -90,6 +168,27 @@ import type {
   PostApiV1EventsByIdRsvpData,
   PostApiV1EventsByIdRsvpErrors,
   PostApiV1EventsByIdRsvpResponses,
+  PostApiV1MeAvatarData,
+  PostApiV1MeAvatarErrors,
+  PostApiV1MeAvatarResponses,
+  PostApiV1MembershipsGroupsBySlugData,
+  PostApiV1MembershipsGroupsBySlugErrors,
+  PostApiV1MembershipsGroupsBySlugResponses,
+  PostApiV1MembershipsInvitationsByIdAcceptData,
+  PostApiV1MembershipsInvitationsByIdAcceptErrors,
+  PostApiV1MembershipsInvitationsByIdAcceptResponses,
+  PostApiV1MembershipsInvitationsByIdDeclineData,
+  PostApiV1MembershipsInvitationsByIdDeclineErrors,
+  PostApiV1MembershipsInvitationsByIdDeclineResponses,
+  PostApiV1SeoActionsData,
+  PostApiV1SeoActionsErrors,
+  PostApiV1SeoActionsResponses,
+  PutApiV1EventsByIdRsvpData,
+  PutApiV1EventsByIdRsvpErrors,
+  PutApiV1EventsByIdRsvpResponses,
+  PutApiV1ImagesByIdAltData,
+  PutApiV1ImagesByIdAltErrors,
+  PutApiV1ImagesByIdAltResponses,
 } from "./types.gen";
 
 export type Options<
@@ -121,129 +220,176 @@ export const getApiStatus = <ThrowOnError extends boolean = false>(
   );
 
 /**
- * List recent cron run log entries
+ * Sign in and receive a personal access token
+ *
+ * Issues a new personal access token for this device and revokes the one an earlier sign-in issued for the same device name. Send it as a Bearer token on every call and sign in again on a 401.
  */
-export const getApiV1AdminLogsCron = <ThrowOnError extends boolean = false>(
-  options?: Options<GetApiV1AdminLogsCronData, ThrowOnError>,
+export const postApiV1AuthLogin = <ThrowOnError extends boolean = false>(
+  options: Options<PostApiV1AuthLoginData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<
+    PostApiV1AuthLoginResponses,
+    PostApiV1AuthLoginErrors,
+    ThrowOnError
+  >({
+    url: "/api/v1/auth/login",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Sign out and revoke the calling token
+ */
+export const postApiV1AuthLogout = <ThrowOnError extends boolean = false>(
+  options?: Options<PostApiV1AuthLogoutData, ThrowOnError>,
+) =>
+  (options?.client ?? client).post<
+    PostApiV1AuthLogoutResponses,
+    PostApiV1AuthLogoutErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/auth/logout",
+    ...options,
+  });
+
+/**
+ * Catalogue of block types and the fields each one accepts
+ */
+export const getApiV1CmsBlockTypes = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiV1CmsBlockTypesData, ThrowOnError>,
 ) =>
   (options?.client ?? client).get<
-    GetApiV1AdminLogsCronResponses,
-    GetApiV1AdminLogsCronErrors,
+    GetApiV1CmsBlockTypesResponses,
+    GetApiV1CmsBlockTypesErrors,
     ThrowOnError
   >({
-    responseTransformer: getApiV1AdminLogsCronResponseTransformer,
-    security: [
-      { scheme: "bearer", type: "http" },
-      { scheme: "bearer", type: "http" },
-    ],
-    url: "/api/v1/admin/logs/cron",
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/cms/block-types",
     ...options,
   });
 
 /**
- * Get a single cron log entry
+ * Delete one block
  */
-export const getApiV1AdminLogsCronById = <ThrowOnError extends boolean = false>(
-  options: Options<GetApiV1AdminLogsCronByIdData, ThrowOnError>,
+export const deleteApiV1CmsBlocksByBlockId = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<DeleteApiV1CmsBlocksByBlockIdData, ThrowOnError>,
 ) =>
-  (options.client ?? client).get<
-    GetApiV1AdminLogsCronByIdResponses,
-    GetApiV1AdminLogsCronByIdErrors,
+  (options.client ?? client).delete<
+    DeleteApiV1CmsBlocksByBlockIdResponses,
+    DeleteApiV1CmsBlocksByBlockIdErrors,
     ThrowOnError
   >({
-    responseTransformer: getApiV1AdminLogsCronByIdResponseTransformer,
-    security: [
-      { scheme: "bearer", type: "http" },
-      { scheme: "bearer", type: "http" },
-    ],
-    url: "/api/v1/admin/logs/cron/{id}",
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/cms/blocks/{blockId}",
     ...options,
   });
 
 /**
- * List email send-log entries
+ * Overlay fields onto a stored block
+ *
+ * The payload is merged over the stored one, so a partial body only changes the fields it names.
  */
-export const getApiV1AdminLogsSendlog = <ThrowOnError extends boolean = false>(
-  options?: Options<GetApiV1AdminLogsSendlogData, ThrowOnError>,
+export const patchApiV1CmsBlocksByBlockId = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<PatchApiV1CmsBlocksByBlockIdData, ThrowOnError>,
+) =>
+  (options.client ?? client).patch<
+    PatchApiV1CmsBlocksByBlockIdResponses,
+    PatchApiV1CmsBlocksByBlockIdErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/cms/blocks/{blockId}",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Move a block one position up or down within its page and locale
+ */
+export const postApiV1CmsBlocksByBlockIdMove = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<PostApiV1CmsBlocksByBlockIdMoveData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<
+    PostApiV1CmsBlocksByBlockIdMoveResponses,
+    PostApiV1CmsBlocksByBlockIdMoveErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/cms/blocks/{blockId}/move",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * List every CMS page with its owning group and per-locale block counts
+ */
+export const getApiV1CmsPages = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiV1CmsPagesData, ThrowOnError>,
 ) =>
   (options?.client ?? client).get<
-    GetApiV1AdminLogsSendlogResponses,
-    GetApiV1AdminLogsSendlogErrors,
+    GetApiV1CmsPagesResponses,
+    GetApiV1CmsPagesErrors,
     ThrowOnError
   >({
-    responseTransformer: getApiV1AdminLogsSendlogResponseTransformer,
-    security: [
-      { scheme: "bearer", type: "http" },
-      { scheme: "bearer", type: "http" },
-    ],
-    url: "/api/v1/admin/logs/sendlog",
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/cms/pages",
     ...options,
   });
 
 /**
- * Get a single send-log entry
+ * Ordered blocks of one page in one locale
  */
-export const getApiV1AdminLogsSendlogById = <
+export const getApiV1CmsPagesByIdBlocks = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<GetApiV1AdminLogsSendlogByIdData, ThrowOnError>,
+  options: Options<GetApiV1CmsPagesByIdBlocksData, ThrowOnError>,
 ) =>
   (options.client ?? client).get<
-    GetApiV1AdminLogsSendlogByIdResponses,
-    GetApiV1AdminLogsSendlogByIdErrors,
+    GetApiV1CmsPagesByIdBlocksResponses,
+    GetApiV1CmsPagesByIdBlocksErrors,
     ThrowOnError
   >({
-    responseTransformer: getApiV1AdminLogsSendlogByIdResponseTransformer,
-    security: [
-      { scheme: "bearer", type: "http" },
-      { scheme: "bearer", type: "http" },
-    ],
-    url: "/api/v1/admin/logs/sendlog/{id}",
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/cms/pages/{id}/blocks",
     ...options,
   });
 
 /**
- * List recent security incidents
+ * Append a block to a page in one locale
  */
-export const getApiV1AdminSecurityIncidents = <
+export const postApiV1CmsPagesByIdBlocks = <
   ThrowOnError extends boolean = false,
 >(
-  options?: Options<GetApiV1AdminSecurityIncidentsData, ThrowOnError>,
+  options: Options<PostApiV1CmsPagesByIdBlocksData, ThrowOnError>,
 ) =>
-  (options?.client ?? client).get<
-    GetApiV1AdminSecurityIncidentsResponses,
-    GetApiV1AdminSecurityIncidentsErrors,
+  (options.client ?? client).post<
+    PostApiV1CmsPagesByIdBlocksResponses,
+    PostApiV1CmsPagesByIdBlocksErrors,
     ThrowOnError
   >({
-    responseTransformer: getApiV1AdminSecurityIncidentsResponseTransformer,
-    security: [
-      { scheme: "bearer", type: "http" },
-      { scheme: "bearer", type: "http" },
-    ],
-    url: "/api/v1/admin/security/incidents",
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/cms/pages/{id}/blocks",
     ...options,
-  });
-
-/**
- * Get a single security incident with full provider reports
- */
-export const getApiV1AdminSecurityIncidentsById = <
-  ThrowOnError extends boolean = false,
->(
-  options: Options<GetApiV1AdminSecurityIncidentsByIdData, ThrowOnError>,
-) =>
-  (options.client ?? client).get<
-    GetApiV1AdminSecurityIncidentsByIdResponses,
-    GetApiV1AdminSecurityIncidentsByIdErrors,
-    ThrowOnError
-  >({
-    responseTransformer: getApiV1AdminSecurityIncidentsByIdResponseTransformer,
-    security: [
-      { scheme: "bearer", type: "http" },
-      { scheme: "bearer", type: "http" },
-    ],
-    url: "/api/v1/admin/security/incidents/{id}",
-    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
   });
 
 /**
@@ -279,6 +425,47 @@ export const getApiV1EventsById = <ThrowOnError extends boolean = false>(
   });
 
 /**
+ * List who is coming to an event
+ *
+ * Who is coming, as the event page shows it to a signed-in member: the people who RSVPed with their guests, plus the organizer-maintained external count.
+ */
+export const getApiV1EventsByIdAttendees = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<GetApiV1EventsByIdAttendeesData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<
+    GetApiV1EventsByIdAttendeesResponses,
+    GetApiV1EventsByIdAttendeesErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/events/{id}/attendees",
+    ...options,
+  });
+
+/**
+ * List the comments on an event
+ *
+ * Newest first, as on the event page. Page backwards by passing the previous page's nextBefore.
+ */
+export const getApiV1EventsByIdComments = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<GetApiV1EventsByIdCommentsData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<
+    GetApiV1EventsByIdCommentsResponses,
+    GetApiV1EventsByIdCommentsErrors,
+    ThrowOnError
+  >({
+    responseTransformer: getApiV1EventsByIdCommentsResponseTransformer,
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/events/{id}/comments",
+    ...options,
+  });
+
+/**
  * Post a comment on an event
  */
 export const postApiV1EventsByIdComments = <
@@ -292,10 +479,7 @@ export const postApiV1EventsByIdComments = <
     ThrowOnError
   >({
     responseTransformer: postApiV1EventsByIdCommentsResponseTransformer,
-    security: [
-      { scheme: "bearer", type: "http" },
-      { scheme: "bearer", type: "http" },
-    ],
+    security: [{ scheme: "bearer", type: "http" }],
     url: "/api/v1/events/{id}/comments",
     ...options,
     headers: {
@@ -310,18 +494,33 @@ export const postApiV1EventsByIdComments = <
 export const deleteApiV1EventsByIdCommentsByCommentId = <
   ThrowOnError extends boolean = false,
 >(
-  options?: Options<DeleteApiV1EventsByIdCommentsByCommentIdData, ThrowOnError>,
+  options: Options<DeleteApiV1EventsByIdCommentsByCommentIdData, ThrowOnError>,
 ) =>
-  (options?.client ?? client).delete<
+  (options.client ?? client).delete<
     DeleteApiV1EventsByIdCommentsByCommentIdResponses,
     DeleteApiV1EventsByIdCommentsByCommentIdErrors,
     ThrowOnError
   >({
-    security: [
-      { scheme: "bearer", type: "http" },
-      { scheme: "bearer", type: "http" },
-    ],
+    security: [{ scheme: "bearer", type: "http" }],
     url: "/api/v1/events/{id}/comments/{commentId}",
+    ...options,
+  });
+
+/**
+ * List the photos of an event
+ *
+ * The photos of the event in every generated size. Photos reported by a member are left out, as on the event page.
+ */
+export const getApiV1EventsByIdImages = <ThrowOnError extends boolean = false>(
+  options: Options<GetApiV1EventsByIdImagesData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<
+    GetApiV1EventsByIdImagesResponses,
+    GetApiV1EventsByIdImagesErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/events/{id}/images",
     ...options,
   });
 
@@ -337,10 +536,7 @@ export const postApiV1EventsByIdImages = <ThrowOnError extends boolean = false>(
     ThrowOnError
   >({
     ...formDataBodySerializer,
-    security: [
-      { scheme: "bearer", type: "http" },
-      { scheme: "bearer", type: "http" },
-    ],
+    security: [{ scheme: "bearer", type: "http" }],
     url: "/api/v1/events/{id}/images",
     ...options,
     headers: {
@@ -355,36 +551,53 @@ export const postApiV1EventsByIdImages = <ThrowOnError extends boolean = false>(
 export const deleteApiV1EventsByIdImagesByImageId = <
   ThrowOnError extends boolean = false,
 >(
-  options?: Options<DeleteApiV1EventsByIdImagesByImageIdData, ThrowOnError>,
+  options: Options<DeleteApiV1EventsByIdImagesByImageIdData, ThrowOnError>,
 ) =>
-  (options?.client ?? client).delete<
+  (options.client ?? client).delete<
     DeleteApiV1EventsByIdImagesByImageIdResponses,
     DeleteApiV1EventsByIdImagesByImageIdErrors,
     ThrowOnError
   >({
-    security: [
-      { scheme: "bearer", type: "http" },
-      { scheme: "bearer", type: "http" },
-    ],
+    security: [{ scheme: "bearer", type: "http" }],
     url: "/api/v1/events/{id}/images/{imageId}",
     ...options,
   });
 
 /**
+ * List the other dates of a recurring meeting
+ *
+ * The upcoming visible events of the same recurring series, each with the caller's own RSVP state. An event without a series answers with itself.
+ */
+export const getApiV1EventsByIdOccurrences = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<GetApiV1EventsByIdOccurrencesData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<
+    GetApiV1EventsByIdOccurrencesResponses,
+    GetApiV1EventsByIdOccurrencesErrors,
+    ThrowOnError
+  >({
+    responseTransformer: getApiV1EventsByIdOccurrencesResponseTransformer,
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/events/{id}/occurrences",
+    ...options,
+  });
+
+/**
  * Remove RSVP from an event
+ *
+ * Withdrawing is never refused: a canceled event, an event that has started and a lost group membership all still let the member off the attendee list.
  */
 export const deleteApiV1EventsByIdRsvp = <ThrowOnError extends boolean = false>(
-  options?: Options<DeleteApiV1EventsByIdRsvpData, ThrowOnError>,
+  options: Options<DeleteApiV1EventsByIdRsvpData, ThrowOnError>,
 ) =>
-  (options?.client ?? client).delete<
+  (options.client ?? client).delete<
     DeleteApiV1EventsByIdRsvpResponses,
     DeleteApiV1EventsByIdRsvpErrors,
     ThrowOnError
   >({
-    security: [
-      { scheme: "bearer", type: "http" },
-      { scheme: "bearer", type: "http" },
-    ],
+    security: [{ scheme: "bearer", type: "http" }],
     url: "/api/v1/events/{id}/rsvp",
     ...options,
   });
@@ -393,19 +606,38 @@ export const deleteApiV1EventsByIdRsvp = <ThrowOnError extends boolean = false>(
  * RSVP yes to an event
  */
 export const postApiV1EventsByIdRsvp = <ThrowOnError extends boolean = false>(
-  options?: Options<PostApiV1EventsByIdRsvpData, ThrowOnError>,
+  options: Options<PostApiV1EventsByIdRsvpData, ThrowOnError>,
 ) =>
-  (options?.client ?? client).post<
+  (options.client ?? client).post<
     PostApiV1EventsByIdRsvpResponses,
     PostApiV1EventsByIdRsvpErrors,
     ThrowOnError
   >({
-    security: [
-      { scheme: "bearer", type: "http" },
-      { scheme: "bearer", type: "http" },
-    ],
+    security: [{ scheme: "bearer", type: "http" }],
     url: "/api/v1/events/{id}/rsvp",
     ...options,
+  });
+
+/**
+ * Set RSVP and guests on an event
+ *
+ * Idempotent: sets the RSVP and the guest count in one call and answers the resulting state.
+ */
+export const putApiV1EventsByIdRsvp = <ThrowOnError extends boolean = false>(
+  options: Options<PutApiV1EventsByIdRsvpData, ThrowOnError>,
+) =>
+  (options.client ?? client).put<
+    PutApiV1EventsByIdRsvpResponses,
+    PutApiV1EventsByIdRsvpErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/events/{id}/rsvp",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
   });
 
 /**
@@ -451,10 +683,7 @@ export const getApiV1GroupsByGroupSlugAdminMembers = <
   >({
     responseTransformer:
       getApiV1GroupsByGroupSlugAdminMembersResponseTransformer,
-    security: [
-      { scheme: "bearer", type: "http" },
-      { scheme: "bearer", type: "http" },
-    ],
+    security: [{ scheme: "bearer", type: "http" }],
     url: "/api/v1/groups/{groupSlug}/admin/members",
     ...options,
   });
@@ -474,10 +703,7 @@ export const getApiV1GroupsByGroupSlugAdminSettings = <
   >({
     responseTransformer:
       getApiV1GroupsByGroupSlugAdminSettingsResponseTransformer,
-    security: [
-      { scheme: "bearer", type: "http" },
-      { scheme: "bearer", type: "http" },
-    ],
+    security: [{ scheme: "bearer", type: "http" }],
     url: "/api/v1/groups/{groupSlug}/admin/settings",
     ...options,
   });
@@ -511,6 +737,126 @@ export const getApiV1GroupsByGroupSlugCmsByCmsSlug = <
   >({ url: "/api/v1/groups/{groupSlug}/cms/{cmsSlug}", ...options });
 
 /**
+ * List images missing per-language alt text (keyset-paginated)
+ */
+export const getApiV1ImagesMissingAlt = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiV1ImagesMissingAltData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<
+    GetApiV1ImagesMissingAltResponses,
+    GetApiV1ImagesMissingAltErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/images/missing-alt",
+    ...options,
+  });
+
+/**
+ * Store alt text for one image, keyed by locale
+ */
+export const putApiV1ImagesByIdAlt = <ThrowOnError extends boolean = false>(
+  options: Options<PutApiV1ImagesByIdAltData, ThrowOnError>,
+) =>
+  (options.client ?? client).put<
+    PutApiV1ImagesByIdAltResponses,
+    PutApiV1ImagesByIdAltErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/images/{id}/alt",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Stream a downscaled preview of the original image
+ */
+export const getApiV1ImagesByIdContent = <ThrowOnError extends boolean = false>(
+  options: Options<GetApiV1ImagesByIdContentData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<
+    GetApiV1ImagesByIdContentResponses,
+    GetApiV1ImagesByIdContentErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/images/{id}/content",
+    ...options,
+  });
+
+/**
+ * List recent cron run log entries
+ */
+export const getApiV1LogsCron = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiV1LogsCronData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<
+    GetApiV1LogsCronResponses,
+    GetApiV1LogsCronErrors,
+    ThrowOnError
+  >({
+    responseTransformer: getApiV1LogsCronResponseTransformer,
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/logs/cron",
+    ...options,
+  });
+
+/**
+ * Get a single cron log entry
+ */
+export const getApiV1LogsCronById = <ThrowOnError extends boolean = false>(
+  options: Options<GetApiV1LogsCronByIdData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<
+    GetApiV1LogsCronByIdResponses,
+    GetApiV1LogsCronByIdErrors,
+    ThrowOnError
+  >({
+    responseTransformer: getApiV1LogsCronByIdResponseTransformer,
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/logs/cron/{id}",
+    ...options,
+  });
+
+/**
+ * List email send-log entries
+ */
+export const getApiV1LogsSendlog = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiV1LogsSendlogData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<
+    GetApiV1LogsSendlogResponses,
+    GetApiV1LogsSendlogErrors,
+    ThrowOnError
+  >({
+    responseTransformer: getApiV1LogsSendlogResponseTransformer,
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/logs/sendlog",
+    ...options,
+  });
+
+/**
+ * Get a single send-log entry
+ */
+export const getApiV1LogsSendlogById = <ThrowOnError extends boolean = false>(
+  options: Options<GetApiV1LogsSendlogByIdData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<
+    GetApiV1LogsSendlogByIdResponses,
+    GetApiV1LogsSendlogByIdErrors,
+    ThrowOnError
+  >({
+    responseTransformer: getApiV1LogsSendlogByIdResponseTransformer,
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/logs/sendlog/{id}",
+    ...options,
+  });
+
+/**
  * Get the authenticated user profile
  */
 export const getApiV1Me = <ThrowOnError extends boolean = false>(
@@ -522,11 +868,93 @@ export const getApiV1Me = <ThrowOnError extends boolean = false>(
     ThrowOnError
   >({
     responseTransformer: getApiV1MeResponseTransformer,
-    security: [
-      { scheme: "bearer", type: "http" },
-      { scheme: "bearer", type: "http" },
-    ],
+    security: [{ scheme: "bearer", type: "http" }],
     url: "/api/v1/me",
+    ...options,
+  });
+
+/**
+ * Edit the authenticated member profile
+ *
+ * Only the fields present in the body change. The name follows the website rule: a name already stored above the cap keeps working, but a change has to fit it.
+ */
+export const patchApiV1Me = <ThrowOnError extends boolean = false>(
+  options: Options<PatchApiV1MeData, ThrowOnError>,
+) =>
+  (options.client ?? client).patch<
+    PatchApiV1MeResponses,
+    PatchApiV1MeErrors,
+    ThrowOnError
+  >({
+    responseTransformer: patchApiV1MeResponseTransformer,
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/me",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Replace the authenticated member avatar
+ *
+ * Replaces the member avatar. The previous picture stays in the member own gallery, as on the website.
+ */
+export const postApiV1MeAvatar = <ThrowOnError extends boolean = false>(
+  options: Options<PostApiV1MeAvatarData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<
+    PostApiV1MeAvatarResponses,
+    PostApiV1MeAvatarErrors,
+    ThrowOnError
+  >({
+    ...formDataBodySerializer,
+    responseTransformer: postApiV1MeAvatarResponseTransformer,
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/me/avatar",
+    ...options,
+    headers: {
+      "Content-Type": null,
+      ...options.headers,
+    },
+  });
+
+/**
+ * List the upcoming meetings of the authenticated member
+ *
+ * The upcoming events of the member's groups plus the visible upcoming events they RSVPed to elsewhere, canceled ones included and flagged.
+ */
+export const getApiV1MeEvents = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiV1MeEventsData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<
+    GetApiV1MeEventsResponses,
+    GetApiV1MeEventsErrors,
+    ThrowOnError
+  >({
+    responseTransformer: getApiV1MeEventsResponseTransformer,
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/me/events",
+    ...options,
+  });
+
+/**
+ * List the groups of the authenticated member
+ *
+ * Every group the member belongs to or has asked to join, including the ones that blocked them, each with the role and the membership status.
+ */
+export const getApiV1MeGroups = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiV1MeGroupsData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<
+    GetApiV1MeGroupsResponses,
+    GetApiV1MeGroupsErrors,
+    ThrowOnError
+  >({
+    responseTransformer: getApiV1MeGroupsResponseTransformer,
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/me/groups",
     ...options,
   });
 
@@ -542,10 +970,224 @@ export const getApiV1MeRsvps = <ThrowOnError extends boolean = false>(
     ThrowOnError
   >({
     responseTransformer: getApiV1MeRsvpsResponseTransformer,
-    security: [
-      { scheme: "bearer", type: "http" },
-      { scheme: "bearer", type: "http" },
-    ],
+    security: [{ scheme: "bearer", type: "http" }],
     url: "/api/v1/me/rsvps",
+    ...options,
+  });
+
+/**
+ * Leave a group
+ *
+ * The same rules the website applies: the last owner cannot leave, a blocked member cannot, and the platform group can only be left once it is no longer needed for another membership.
+ */
+export const deleteApiV1MembershipsGroupsBySlug = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<DeleteApiV1MembershipsGroupsBySlugData, ThrowOnError>,
+) =>
+  (options.client ?? client).delete<
+    DeleteApiV1MembershipsGroupsBySlugResponses,
+    DeleteApiV1MembershipsGroupsBySlugErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/memberships/groups/{slug}",
+    ...options,
+  });
+
+/**
+ * Join a listed group, or ask to
+ *
+ * Only a group listed on the groups portal can be joined here. A Hidden group is joined on its own domain and a Private group by invitation, so both answer group_not_joinable. When the group requires approval the membership comes back pending.
+ */
+export const postApiV1MembershipsGroupsBySlug = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<PostApiV1MembershipsGroupsBySlugData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<
+    PostApiV1MembershipsGroupsBySlugResponses,
+    PostApiV1MembershipsGroupsBySlugErrors,
+    ThrowOnError
+  >({
+    responseTransformer: postApiV1MembershipsGroupsBySlugResponseTransformer,
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/memberships/groups/{slug}",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * List the open group invitations
+ *
+ * Invitations addressed to the calling member, minus those hidden by a block in either direction.
+ */
+export const getApiV1MembershipsInvitations = <
+  ThrowOnError extends boolean = false,
+>(
+  options?: Options<GetApiV1MembershipsInvitationsData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<
+    GetApiV1MembershipsInvitationsResponses,
+    GetApiV1MembershipsInvitationsErrors,
+    ThrowOnError
+  >({
+    responseTransformer: getApiV1MembershipsInvitationsResponseTransformer,
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/memberships/invitations",
+    ...options,
+  });
+
+/**
+ * Accept a group invitation
+ *
+ * Accepting settles the membership at the invited role. While the member still has to join the platform group, this answers 409 platform_crossing_required; retry with platformMailConsent to answer that question first.
+ */
+export const postApiV1MembershipsInvitationsByIdAccept = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<PostApiV1MembershipsInvitationsByIdAcceptData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<
+    PostApiV1MembershipsInvitationsByIdAcceptResponses,
+    PostApiV1MembershipsInvitationsByIdAcceptErrors,
+    ThrowOnError
+  >({
+    responseTransformer:
+      postApiV1MembershipsInvitationsByIdAcceptResponseTransformer,
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/memberships/invitations/{id}/accept",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Decline a group invitation
+ */
+export const postApiV1MembershipsInvitationsByIdDecline = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<
+    PostApiV1MembershipsInvitationsByIdDeclineData,
+    ThrowOnError
+  >,
+) =>
+  (options.client ?? client).post<
+    PostApiV1MembershipsInvitationsByIdDeclineResponses,
+    PostApiV1MembershipsInvitationsByIdDeclineErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/memberships/invitations/{id}/decline",
+    ...options,
+  });
+
+/**
+ * List recent security incidents
+ */
+export const getApiV1SecurityIncidents = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiV1SecurityIncidentsData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<
+    GetApiV1SecurityIncidentsResponses,
+    GetApiV1SecurityIncidentsErrors,
+    ThrowOnError
+  >({
+    responseTransformer: getApiV1SecurityIncidentsResponseTransformer,
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/security/incidents",
+    ...options,
+  });
+
+/**
+ * Get a single security incident with full provider reports
+ */
+export const getApiV1SecurityIncidentsById = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<GetApiV1SecurityIncidentsByIdData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<
+    GetApiV1SecurityIncidentsByIdResponses,
+    GetApiV1SecurityIncidentsByIdErrors,
+    ThrowOnError
+  >({
+    responseTransformer: getApiV1SecurityIncidentsByIdResponseTransformer,
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/security/incidents/{id}",
+    ...options,
+  });
+
+/**
+ * List recently logged SEO actions
+ */
+export const getApiV1SeoActions = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiV1SeoActionsData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<
+    GetApiV1SeoActionsResponses,
+    GetApiV1SeoActionsErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/seo/actions",
+    ...options,
+  });
+
+/**
+ * Log an SEO-relevant action for later attribution
+ */
+export const postApiV1SeoActions = <ThrowOnError extends boolean = false>(
+  options: Options<PostApiV1SeoActionsData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<
+    PostApiV1SeoActionsResponses,
+    PostApiV1SeoActionsErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/seo/actions",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * List detected SEO issues
+ */
+export const getApiV1SeoIssues = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiV1SeoIssuesData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<
+    GetApiV1SeoIssuesResponses,
+    GetApiV1SeoIssuesErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/seo/issues",
+    ...options,
+  });
+
+/**
+ * SEO health for one property, with deltas since last pull
+ */
+export const getApiV1SeoStatus = <ThrowOnError extends boolean = false>(
+  options?: Options<GetApiV1SeoStatusData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<
+    GetApiV1SeoStatusResponses,
+    GetApiV1SeoStatusErrors,
+    ThrowOnError
+  >({
+    security: [{ scheme: "bearer", type: "http" }],
+    url: "/api/v1/seo/status",
     ...options,
   });
